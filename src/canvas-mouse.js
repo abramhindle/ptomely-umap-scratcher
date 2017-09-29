@@ -1,8 +1,10 @@
 /*!
-	canvas-mouse ver 0.1.0 beta
+	canvas-mouse ver 0.2.0
 	Copyright (c) 2017 Epistemex
 	www.epistemex.com
 */
+
+"use strict";
 
 /**
  * A mouse and touch position handler for 2D canvas able to handle scaled
@@ -18,39 +20,48 @@
  * @param {Matrix} [options.matrix=null] - to support broader range of browser a custom matrix object can be passed already bound
  *  to the current context (same as passed as argument). Using a custom matrix will require the transforms to be called on this
  *  instead of the context itself.
+ * @param {boolean} [options.inverseHack=true] - use inverse hack for custom matrix (speeds up mouse point conversion, slows down transforms slightly).
+ *  Note: alters the matrix instance if true.
  * @constructor
  */
 function CanvasMouse(context, options) {
 
   if (!(context instanceof CanvasRenderingContext2D))
-    throw "context must be a 2D canvas context.";
+    throw "Need a 2D canvas context.";
 
   var me = this, ref;
 
   options = Object.assign({
-    level: "basic",   // basic, scale, transforms
-    matrix: null      // transformation-matrix-2d if no native
+    level: "basic",           // basic, scale, transforms
+    matrix: null,             // transformation-matrix-2d if no native
+    inverseHack: true         // use inverse hack for custom matrix
   }, options);
 
   var level = Math.max(0, ["basic", "scale", "transforms"].indexOf(options.level));
-  var hasMatrix = (context.currentTransform || context.mozCurrentTransform || null);
+  var hasMatrix = ("currentTransform" in context || "mozCurrentTransform" in context);
 
   this.context = context;
   this.canvas = context.canvas;
   this.matrix = options.matrix;
 
-  this.deltaX = 0;
+  // optimize inverse matrix extraction
+  if (this.matrix && options.inverseHack) {
+    this.matrix._xx = this.matrix._x;
+    this.matrix._x = function() {
+      me.imatrix = this.inverse();
+      return this._xx();
+    }
+  }
+
+  this.deltaX =
   this.deltaY = 0;
-  this.scaleX = 1;
+  this.scaleX =
   this.scaleY = 1;
 
   // if currentTransformInverse() is not supported force scaled
-  if (level === 2 && !hasMatrix) {
+  if (level === 2 && (!hasMatrix || this.matrix)) {
     if (this.matrix) level = 3;
-    else {
-      console.log("Warning: this browser does not support context.currentTransform(). Using \"scale\" instead.");
-      level = 1;
-    }
+    else throw "Warning: browser doesn't support currentTransform().";
   }
 
   /**
@@ -60,7 +71,7 @@ function CanvasMouse(context, options) {
    * @returns {*} object holding properties x and y with converted position matching context
    * @method
    */
-  this.getPos = [this.callbackBasic, this.callbackScale, this.callbackTransforms, this.callbackTransforms2][level];
+  this.getPos = [this._basic, this._scale, this._transforms, this._transforms2][level];
 
   // padding offsets
   this.pl = 0;
@@ -80,7 +91,8 @@ function CanvasMouse(context, options) {
    */
   this.update = updateOnScroll;
 
-  function init(o) {
+  // Limit reflow so only read trigger values when absolutely needed
+  function init() {
     var
       rect = canvas.getBoundingClientRect(),
       cs = getComputedStyle(canvas),
@@ -95,14 +107,15 @@ function CanvasMouse(context, options) {
       bt = parseInt(prop(_b + "top" + _w)),
       bb = parseInt(prop(_b + "bottom" + _w));
 
-    o.pl = pl + bl;
-    o.pt = pt + bt;
-    o.deltaX = rect.left + pl + bl;
-    o.deltaY = rect.top + pt + bt;
-    o.scaleX = canvas.width / (rect.width - pl - pr - bl - br);
-    o.scaleY = canvas.height / (rect.height - pt - pb - bt - bb);
+    me.pl = pl + bl;
+    me.pt = pt + bt;
+    me.deltaX = rect.left + me.pl;
+    me.deltaY = rect.top + me.pt;
+    me.scaleX = canvas.width / (rect.width - me.pl - pr - br);
+    me.scaleY = canvas.height / (rect.height - me.pt - pb - bb);
   }
 
+  // Limit reflow so only read trigger values when absolutely needed
   function updateOnScroll() {
     var rect = canvas.getBoundingClientRect();
     me.deltaX = rect.left + me.pl;
@@ -117,29 +130,29 @@ function CanvasMouse(context, options) {
     ref = requestAnimationFrame(updateOnScroll)
   }
 
-  init(this);
+  init();
 }
 
 CanvasMouse.prototype = {
 
-  callbackBasic: function(e) {
+  _basic: function(e) {
     return {
       x: e.clientX - this.deltaX,
       y: e.clientY - this.deltaY
     }
   },
 
-  callbackScale: function(e) {
+  _scale: function(e) {
     return {
       x: (e.clientX - this.deltaX) * this.scaleX,
       y: (e.clientY - this.deltaY) * this.scaleY
     }
   },
 
-  callbackTransforms: function(e) {
+  _transforms: function(e) {
     var pos, matrix, cmatrix, imatrix, ctx = this.context;
 
-    pos = this.callbackScale(e);
+    pos = this._scale(e);
     cmatrix = (ctx.currentTransform || ctx.mozCurrentTransform);
 
     // Convert from SVGMatrix (used by Chrome in experimental mode)
@@ -154,9 +167,9 @@ CanvasMouse.prototype = {
     }
   },
 
-  callbackTransforms2: function(e) {
-    var pos = this.callbackScale(e);
-    return this.matrix.inverse().applyToPoint(pos.x, pos.y);
+  _transforms2: function(e) {
+    var pos = this._scale(e);
+    return this.imatrix.applyToPoint(pos.x, pos.y);
   },
 
   /**

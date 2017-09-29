@@ -7,7 +7,7 @@ Helper object for getting the correct mouse or touch position in 2D canvas effic
 Features
 --------
 
-- Efficient, causes no unneeded DOM reflows (handles scrolling gracefully)
+- Efficient, causes no unneeded DOM reflows (handles scrolling and resizing gracefully)
 - Handles scaled canvas element (CSS) versus bitmap size
 - Handles transformed context
 - Handles element padding and borders if any
