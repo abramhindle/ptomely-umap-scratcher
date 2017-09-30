@@ -12,7 +12,7 @@ Features
 - Handles transformed context
 - Handles element padding and borders if any
 - Supports the [transformation-matrix-2d](https://github.com/epistemex/transformation-matrix-js) solution for browsers without
-native support for [`currentTransform()`](https://devdocs.io/dom/canvasrenderingcontext2d/currenttransform).
+native support for [`currentTransform`](https://devdocs.io/dom/canvasrenderingcontext2d/currenttransform).
 
 
 Install
@@ -48,7 +48,7 @@ Then in the handler you're using pass the event to get the correct position:
 Issues
 ------
 
-- `currentTransform()` is not supported by all browsers at the moment.
+- `currentTransform` is not supported by all browsers at the moment.
 A [custom solution](https://github.com/epistemex/transformation-matrix-js)
 can be used in place that is compatible will all browsers.
 

@@ -98,7 +98,7 @@
 <li>Handles transformed context</li>
 <li>Handles element padding and borders if any</li>
 <li>Supports the <a href="https://github.com/epistemex/transformation-matrix-js">transformation-matrix-2d</a> solution for browsers without
-native support for <a href="https://devdocs.io/dom/canvasrenderingcontext2d/currenttransform"><code>currentTransform()</code></a>.</li>
+native support for <a href="https://devdocs.io/dom/canvasrenderingcontext2d/currenttransform"><code>currentTransform</code></a>.</li>
 </ul>
 <h2>Install</h2><p><strong>canvas-mouse</strong> can be installed in various ways:</p>
 <ul>
@@ -117,7 +117,7 @@ var cm = new CanvasMouse(context, {
   var pos = cm.getPos(evt);
   // ... use pos.x, pos.y here
 }</code></pre><h2>Issues</h2><ul>
-<li><code>currentTransform()</code> is not supported by all browsers at the moment.
+<li><code>currentTransform</code> is not supported by all browsers at the moment.
 A <a href="https://github.com/epistemex/transformation-matrix-js">custom solution</a>
 can be used in place that is compatible will all browsers.</li>
 </ul>
