@@ -1,6 +1,10 @@
 Change log for canvas-mouse
 ----------------------
 
+0.6.0
+ADD: New properties for handleScale, handleTransforms, matrix
+CHG: getPosXY() can now take Point object as well as x,y as arguments
+
 0.5.0
 CHG: Options changed from using "levels" to separate booleans (see documentation)
 CHG: Inverse hack always applied (speeds up mouse point conversion with custom matrix object at a slight cost of adding transforms).

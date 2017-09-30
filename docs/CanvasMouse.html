@@ -277,19 +277,30 @@ and transformed context and element.</p>
         <dl>
             
 <hr>
-<dt class="name" id="init">
-    <h4><span class="type-signature"></span>init<span class="type-signature"></span></h4>
+<dt class="name" id="handleScale">
+    <h4><span class="type-signature"></span>handleScale<span class="type-signature"> :boolean</span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        <p>Force re-initialization. Use if canvas element has border, padding
-or size changed.</p>
+        <p>Set or get handleScale status. Can be toggled at any time and will
+affect next position calculations.</p>
     </div>
     
 
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">boolean</span>
+
+
+
+            </li>
+        </ul>
     
 
     
@@ -338,19 +349,104 @@ or size changed.</p>
         
             
 <hr>
-<dt class="name" id="update">
-    <h4><span class="type-signature"></span>update<span class="type-signature"></span></h4>
+<dt class="name" id="handleTransforms">
+    <h4><span class="type-signature"></span>handleTransforms<span class="type-signature"> :boolean</span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        <p>Used to manually update relative position in client if not caught
-automatically by internals.</p>
+        <p>Set or get handleTransforms status. Can be toggled at any time and will
+affect next position calculations. <strong>Note</strong> that if the browser does not
+support currentTransform and a custom Matrix is not provided the flag
+will be set to false regardless.</p>
     </div>
     
 
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">boolean</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="matrix">
+    <h4><span class="type-signature"></span>matrix<span class="type-signature"> :Matrix</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Set or get custom matrix object. If set will override and patch the
+provided matrix.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Matrix</span>
+
+
+
+            </li>
+        </ul>
     
 
     
@@ -406,7 +502,7 @@ automatically by internals.</p>
             
 <hr>
 <dt>
-    <h4 class="name" id="getPos"><span class="type-signature"></span>getPos(e)</h4>
+    <h4 class="name" id="getPos"><span class="type-signature"></span>getPos(event)</h4>
     
     
 </dt>
@@ -450,7 +546,7 @@ and its element scale and transforms.</p>
 
         <tr>
             
-                <td class="name"><code>e</code></td>
+                <td class="name"><code>event</code></td>
             
 
             <td class="type">
@@ -555,7 +651,7 @@ and its element scale and transforms.</p>
             
 <hr>
 <dt>
-    <h4 class="name" id="getPosXY"><span class="type-signature"></span>getPosXY(x, y)</h4>
+    <h4 class="name" id="getPosXY"><span class="type-signature"></span>getPosXY(x [, y])</h4>
     
     
 </dt>
@@ -564,7 +660,9 @@ and its element scale and transforms.</p>
     
     <div class="description">
         <p>Pass in custom x and y point to convert to new position relative to
-bound context.</p>
+bound context. The way it's calculated depends on the options set
+when creating the instance.</p>
+<p>The method can take both a Point object, or two numbers.</p>
     </div>
     
 
@@ -587,6 +685,8 @@ bound context.</p>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -606,6 +706,9 @@ bound context.</p>
             
                 
 <span class="param-type">number</span>
+|
+
+<span class="param-type"><a href="global.html#Point">Point</a></span>
 
 
 
@@ -613,10 +716,18 @@ bound context.</p>
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>x position to convert</p></td>
+            <td class="description last"><p>x position to convert, or if Point the x and y of the object.</p></td>
         </tr>
 
     
@@ -637,10 +748,20 @@ bound context.</p>
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>y position to convert</p></td>
+            <td class="description last"><p>y position to convert (not used if Point object is provided).</p></td>
         </tr>
 
     
@@ -720,6 +841,164 @@ bound context.</p>
 
 
         
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="init"><span class="type-signature"></span>init()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Force re-initialization. Use if canvas element have either border, padding
+or size changed.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="update"><span class="type-signature"></span>update()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Used to manually update relative position in client if not caught
+automatically by internals (scroll and resize).</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>

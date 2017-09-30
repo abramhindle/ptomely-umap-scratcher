@@ -91,21 +91,25 @@
 
 
     <section class="readme-section">
-        <article><h1>﻿canvas-mouse</h1><p>Helper object for getting the correct mouse or touch position in 2D canvas efficiently</p>
+        <article><h1>﻿canvas-mouse</h1><p>Helper object to efficiently obtain the correct mouse or touch position in 2D canvas
+independent of element size versus bitmap size, transforms, borders and padding. </p>
+<p>Useful from simple cases where you need to adjust the position to match canvas
+in a web page, to more complex cases such as click-to-zoom, pan, rotate and 
+scale scenarios.</p>
 <h2>Features</h2><ul>
-<li>Efficient, causes no unneeded DOM reflows (handles scrolling and resizing gracefully)</li>
-<li>Handles scaled canvas element (CSS) versus bitmap size</li>
+<li>Efficient, causes no unneeded DOM reflows (caches key-values and handles scrolling and resizing gracefully)</li>
+<li>Handles CSS-scaled canvas element versus its bitmap size</li>
 <li>Handles transformed context</li>
 <li>Handles element padding and borders if any</li>
-<li>Supports the <a href="https://github.com/epistemex/transformation-matrix-js">transformation-matrix-2d</a> solution for browsers without
-native support for <a href="https://devdocs.io/dom/canvasrenderingcontext2d/currenttransform"><code>currentTransform</code></a>.</li>
+<li>Handling-methods can be changed in real-time (to optimize handling).</li>
+<li>Supports the <a href="https://github.com/epistemex/transformation-matrix-js">transformation-matrix-2d</a> solution (included) 
+for browsers without native support for <a href="https://devdocs.io/dom/canvasrenderingcontext2d/currenttransform"><code>currentTransform</code></a>.</li>
 </ul>
 <h2>Install</h2><p><strong>canvas-mouse</strong> can be installed in various ways:</p>
 <ul>
 <li>Git using HTTPS: <code>git clone https://gitlab.com/epistemex/canvas-mouse.git</code></li>
 <li>Git using SSH: <code>git clone git@gitlab.com:epistemex/canvas-mouse.git</code></li>
-<li>Download <a href="https://gitlab.com/epistemex/canvas-mouse/repository/archive.zip?ref=master">zip archive</a> and extract.</li>
-<li>Download <a href="https://gitlab.com/epistemex/canvas-mouse/repository/archive.tar.gz?ref=master">tar ball</a> and extract.</li>
+<li>See <a href="https://github.com/epistemex/canvas-mouse/releases">releases</a> for other options.</li>
 </ul>
 <h2>Usage</h2><p>Easy to use:</p>
 <pre class="prettyprint source"><code>// pass in a 2D context and handling options
@@ -116,12 +120,20 @@ var cm = new CanvasMouse(context, {
 <pre class="prettyprint source"><code>function someMouseOrTouchHandler(evt) {
   var pos = cm.getPos(evt);
   // ... use pos.x, pos.y here
-}</code></pre><h2>Issues</h2><ul>
-<li><code>currentTransform</code> is not supported by all browsers at the moment.
-A <a href="https://github.com/epistemex/transformation-matrix-js">custom solution</a>
-can be used in place that is compatible will all browsers.</li>
-</ul>
-<p>See the <a href="https://gitlab.com/epistemex/canvas-mouse/issues">issue tracker</a> for details.</p>
+}</code></pre><h2>Issues</h2><p>Using mouse/touch positions with a transformed context:</p>
+<p>The <code>currentTransform</code> is not supported by all browsers at the moment.
+Our <a href="https://github.com/epistemex/transformation-matrix-js">custom matrix solution</a>
+can be used in place and is compatible will all browsers.</p>
+<p>Firefox is currently the only browser that support the property (but in 
+prefixed form) but returns an Array instead of a DOMMatrix. Chrome will 
+return a SVGMatrix, and only if experimental canvas features is enabled 
+behind flags.</p>
+<p>We recommend therefor using the custom matrix solution as this will be 
+cross-platform compatible and independent of browser's current status.</p>
+<p>The only drawback is that you'll call transform operations on the matrix 
+object instead of the context (the matrix will automatically sync the 
+context for you though). See included demo (<code>www/demo_custommatrix.html</code>)
+for an usage example.</p>
 <h2>License</h2><p>Released under <a href="http://choosealicense.com/licenses/mit/">MIT license</a>. You may use this class in both commercial and non-commercial projects provided that full header (minified and developer versions) is included.</p>
 <p><em>&copy; Epistemex 2017</em></p>
 <p><img src="http://i.imgur.com/GP6Q3v8.png" alt="Epistemex"></p></article>
