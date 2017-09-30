@@ -1,6 +1,11 @@
 Change log for canvas-mouse
 ----------------------
 
+0.5.0
+CHG: Options changed from using "levels" to separate booleans (see documentation)
+CHG: Inverse hack always applied (speeds up mouse point conversion with custom matrix object at a slight cost of adding transforms).
+REM: prototype removed since CM is usually only for a single instance.
+
 0.2.0
 ADD: Optional hack for custom matrix to speed up point conversion with transformations
 ADD: Strict mode

@@ -38,7 +38,8 @@
 
   // Create an instance of our position handler and pass the matrix object
   var cm = new CanvasMouse(ctx, {
-    level: "transforms",
+    handleScale: true,
+    handleTransforms: true,
     matrix: matrix
   });
 

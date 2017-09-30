@@ -31,8 +31,11 @@ Usage
 
 Easy to use:
 
-    // pass in a 2D context and level option
-    var cm = new CanvasMouse(context, {level: "transforms"});
+    // pass in a 2D context and handling options
+    var cm = new CanvasMouse(context, {
+        handleScale: true,
+        handleTransforms: true
+      });
 
 Then in the handler you're using pass the event to get the correct position:
 

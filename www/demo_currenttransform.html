@@ -34,7 +34,7 @@
 <button>Clear</button>
 
 <div class="warn">
-  This browser does not support currentTransform. See <a href="demo_custommatrix.html">demo</a> for how to work around that when you need to handle contexts with transforms.
+  This browser doesn't support currentTransform. See <a href="demo_custommatrix.html">demo</a> for how to work around that when you need to handle contexts with transforms.
 </div>
 
 <script src="../src/canvas-mouse.js"></script>
@@ -45,7 +45,8 @@
 
   // Create an instance of our position handler
   var cm = new CanvasMouse(ctx, {
-    level: "transforms"   // assumes browser support of currentTransform
+    handleScale: true,
+    handleTransforms: true
   });
 
   // draw white background so we can see padding.

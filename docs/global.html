@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>canvas-mouse Class: CanvasMouse</title>
+	<title>canvas-mouse Global</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -70,13 +70,13 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: CanvasMouse</h1>
+	<h1 class="page-title">Global</h1>
 <section>
 
 <header>
     
         <h2>
-        CanvasMouse
+        
         </h2>
         
     
@@ -87,123 +87,8 @@
     <div class="container-overview">
     
         
-<hr>
-<dt>
-    <h4 class="name" id="CanvasMouse"><span class="type-signature"></span>new CanvasMouse(context [, options])</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>A mouse and touch position handler for 2D canvas able to handle scaled
-and transformed context and element.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
 
         
-        <th>Argument</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>context</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">CanvasRenderingContext2D</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>2D context to bind to this instance</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#CanvasMouseOptions">CanvasMouseOptions</a></span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>optional options object to allow for scale and transforms to be considered.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
 <dl class="details">
     
 
@@ -243,21 +128,7 @@ and transformed context and element.</p>
 </dl>
 
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
+        
     
     </div>
 
@@ -277,16 +148,17 @@ and transformed context and element.</p>
         <dl>
             
 <hr>
-<dt class="name" id="init">
-    <h4><span class="type-signature"></span>init<span class="type-signature"></span></h4>
+<dt class="name" id="CanvasMouseOptions">
+    <h4><span class="type-signature"></span>CanvasMouseOptions<span class="type-signature"></span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        <p>Force re-initialization. Use if canvas element has border, padding
-or size changed.</p>
+        <p>Valid properties for the option object passed to CanvasMouse constructor.
+The object is intended to be an literal object.</p>
+<p>The default settings handle padding and borders.</p>
     </div>
     
 
@@ -296,139 +168,11 @@ or size changed.</p>
 <dl class="details">
     
 
-	
+    <h5 class="subsection-title">Properties:</h5>
 
-	
+    <dl>
 
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt class="name" id="update">
-    <h4><span class="type-signature"></span>update<span class="type-signature"></span></h4>
-
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Used to manually update relative position in client if not caught
-automatically by internals.</p>
-    </div>
-    
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-</dd>
-
-        </dl>
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="getPos"><span class="type-signature"></span>getPos(e)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Function to convert mouse or touch position to match the context
-and its element scale and transforms.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
+<table class="props table table-striped">
     <thead>
     <tr>
         
@@ -438,7 +182,11 @@ and its element scale and transforms.</p>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -450,13 +198,13 @@ and its element scale and transforms.</p>
 
         <tr>
             
-                <td class="name"><code>e</code></td>
+                <td class="name"><code>handleScale</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">*</span>
+<span class="param-type">boolean</span>
 
 
 
@@ -464,20 +212,111 @@ and its element scale and transforms.</p>
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+                </td>
             
 
-            <td class="description last"><p>event object (mouse, touch) to use for conversion</p></td>
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>handles situations where element size is different than the bitmap size.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>handleTransforms</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>consider transforms applied to the context when calculating position.
+ Note that this require either <code>currentTransform</code> support on the context,
+ or the use of a custom Matrix solution (github.com/epistemex/transformation-matrix-js).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>matrix</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Matrix</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last"><p>to support broader range of browser a custom matrix object can be passed already bound
+ to the current context (same as passed as argument). Using a custom matrix will require the transforms to be called on this
+ instead of the context itself.</p></td>
         </tr>
 
     
     </tbody>
 </table>
+</dl>
 
-    
-
-    
-<dl class="details">
     
 
 	
@@ -515,38 +354,6 @@ and its element scale and transforms.</p>
 	
 </dl>
 
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="global.html#Point">Point</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
@@ -554,30 +361,29 @@ and its element scale and transforms.</p>
         
             
 <hr>
-<dt>
-    <h4 class="name" id="getPosXY"><span class="type-signature"></span>getPosXY(x, y)</h4>
-    
+<dt class="name" id="Point">
+    <h4><span class="type-signature"></span>Point<span class="type-signature"></span></h4>
+
     
 </dt>
 <dd>
-
     
     <div class="description">
-        <p>Pass in custom x and y point to convert to new position relative to
-bound context.</p>
+        <p>Point object</p>
     </div>
     
 
     
 
     
-
+<dl class="details">
     
-    
-        <h5>Parameters:</h5>
-        
 
-<table class="params table table-striped">
+    <h5 class="subsection-title">Properties:</h5>
+
+    <dl>
+
+<table class="props table table-striped">
     <thead>
     <tr>
         
@@ -616,7 +422,7 @@ bound context.</p>
 
             
 
-            <td class="description last"><p>x position to convert</p></td>
+            <td class="description last"><p>floating point number for x position</p></td>
         </tr>
 
     
@@ -640,17 +446,14 @@ bound context.</p>
 
             
 
-            <td class="description last"><p>y position to convert</p></td>
+            <td class="description last"><p>floating point number for y position</p></td>
         </tr>
 
     
     </tbody>
 </table>
+</dl>
 
-    
-
-    
-<dl class="details">
     
 
 	
@@ -688,43 +491,13 @@ bound context.</p>
 	
 </dl>
 
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="global.html#Point">Point</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>
 
         </dl>
+    
+
     
 
     
