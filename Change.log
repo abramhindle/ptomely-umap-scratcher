@@ -1,6 +1,11 @@
 Change log for canvas-mouse
 ----------------------
 
+0.7.0
+ADD: Plugin interface to integrate with events and converted points (for recorders etc.)
+ADD: timestamp property added to point object
+ADD: Plugin: basic point-recorder + demo
+
 0.6.0
 ADD: New properties for handleScale, handleTransforms, matrix
 CHG: getPosXY() can now take Point object as well as x,y as arguments

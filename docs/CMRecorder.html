@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>canvas-mouse Global</title>
+	<title>canvas-mouse Class: CMRecorder</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -70,13 +70,13 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Global</h1>
+	<h1 class="page-title">Class: CMRecorder</h1>
 <section>
 
 <header>
     
         <h2>
-        
+        CMRecorder
         </h2>
         
     
@@ -87,8 +87,30 @@
     <div class="container-overview">
     
         
+<hr>
+<dt>
+    <h4 class="name" id="CMRecorder"><span class="type-signature"></span>new CMRecorder()</h4>
+    
+    
+</dt>
+<dd>
 
-        
+    
+    <div class="description">
+        <p>Recorder plugin for Canvas Mouse.</p>
+<p>Records original points based on events and converted points (original
+points can be recalculated in case matrix for context changes).</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
 <dl class="details">
     
 
@@ -128,7 +150,21 @@
 </dl>
 
 
-        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
     
     </div>
 
@@ -143,218 +179,37 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         <dl>
             
 <hr>
-<dt class="name" id="CanvasMouseOptions">
-    <h4><span class="type-signature"></span>CanvasMouseOptions<span class="type-signature"></span></h4>
-
+<dt>
+    <h4 class="name" id="clear"><span class="type-signature"></span>clear()</h4>
+    
     
 </dt>
 <dd>
+
     
     <div class="description">
-        <p>Valid properties for the option object passed to CanvasMouse constructor.
-The object is intended to be an literal object.</p>
-<p>The default settings handle padding and borders.</p>
+        <p>Clear all recorded points and events.</p>
     </div>
     
 
     
 
     
+
+    
+    
+
+    
 <dl class="details">
     
 
-    <h5 class="subsection-title">Properties:</h5>
-
-    <dl>
-
-<table class="props table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>handleScale</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>handles situations where element size is different than the bitmap size.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>handleTransforms</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>consider transforms applied to the context when calculating position.
- Note that this require either <code>currentTransform</code> support on the context,
- or the use of a custom Matrix solution (github.com/epistemex/transformation-matrix-js).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>matrix</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Matrix</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
-
-            <td class="description last"><p>to support broader range of browser a custom matrix object can be passed already bound
- to the current context (same as passed as argument). Using a custom matrix will require the transforms to be called on this
- instead of the context itself.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>plugins</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>array holding plugin objects. Plugins can be added and removed at a later point too.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-</dl>
-
-    
-
 	
 
 	
@@ -390,6 +245,18 @@ The object is intended to be an literal object.</p>
 	
 </dl>
 
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>
@@ -397,29 +264,30 @@ The object is intended to be an literal object.</p>
         
             
 <hr>
-<dt class="name" id="Point">
-    <h4><span class="type-signature"></span>Point<span class="type-signature"></span></h4>
-
+<dt>
+    <h4 class="name" id="handler"><span class="type-signature"></span>handler(event, pos)</h4>
+    
     
 </dt>
 <dd>
+
     
     <div class="description">
-        <p>Point object</p>
+        <p>Mandatory handler called internally by Canvas Mouse's <code>getPos()</code>.
+Should never be called manually.</p>
     </div>
     
 
     
 
     
-<dl class="details">
+
     
+    
+        <h5>Parameters:</h5>
+        
 
-    <h5 class="subsection-title">Properties:</h5>
-
-    <dl>
-
-<table class="props table table-striped">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -441,13 +309,13 @@ The object is intended to be an literal object.</p>
 
         <tr>
             
-                <td class="name"><code>x</code></td>
+                <td class="name"><code>event</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">*</span>
 
 
 
@@ -458,20 +326,20 @@ The object is intended to be an literal object.</p>
 
             
 
-            <td class="description last"><p>floating point number for x position</p></td>
+            <td class="description last"><p>the original mouse/touch event (ignored in this plugin)</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>y</code></td>
+                <td class="name"><code>pos</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type"><a href="global.html#Point">Point</a></span>
 
 
 
@@ -482,38 +350,17 @@ The object is intended to be an literal object.</p>
 
             
 
-            <td class="description last"><p>floating point number for y position</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>timestamp</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>timestamp for when event happened</p></td>
+            <td class="description last"><p>point object with converted position</p></td>
         </tr>
 
     
     </tbody>
 </table>
-</dl>
 
+    
+
+    
+<dl class="details">
     
 
 	
@@ -551,13 +398,557 @@ The object is intended to be an literal object.</p>
 	
 </dl>
 
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Point">Point</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="originalStrokes"><span class="type-signature"></span>originalStrokes()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns non-calculated points based on the original event objects.
+The array contains arrays representing strokes. Each stroke array
+contains point objects. Each stroke array is intended to be a
+continuous stroke.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="recalc"><span class="type-signature"></span>recalc(cm)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Recalculate original events into new points based on the current
+state of the provided CanvasMouse instance.</p>
+<p>Note: Replaces all old points.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="CanvasMouse.html">CanvasMouse</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Canvas Mouse instance to use</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <ul>
+<li>The recalculated strokes array</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="start"><span class="type-signature"></span>start()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Start recording points and event.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="stop"><span class="type-signature"></span>stop()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Stop recording points and events.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="strokes"><span class="type-signature"></span>strokes()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get recorded and converted strokes array. The array stores stroke
+The array contains arrays representing strokes. Each stroke array
+contains point objects. Each stroke array is intended to be a
+continuous stroke.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
 
         </dl>
-    
-
     
 
     

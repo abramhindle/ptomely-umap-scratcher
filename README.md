@@ -13,6 +13,7 @@ Features
 --------
 
 - Efficient, causes no unneeded DOM reflows (caches key-values and handles scrolling and resizing gracefully)
+- Plugin interface to allow for integrated recorders, modifiers etc. (example plugin included).
 - Handles CSS-scaled canvas element versus its bitmap size
 - Handles transformed context
 - Handles element padding and borders if any

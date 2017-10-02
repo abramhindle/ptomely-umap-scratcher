@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recorder Plugin Demo</title>
+  <style>
+    body {
+      font:16px sans-serif;
+      background:#ccc;
+      }
+    canvas {
+      background:#fff;
+      cursor:crosshair;
+      }
+  </style>
+</head>
+<body>
+<h2>Recorder plugin - Draw something then hit clear + redraw</h2>
+
+<canvas id="canvas" width="1200" height="600"></canvas>
+<div>
+  <button id="redraw">Redraw</button>
+  <button id="clear">Clear</button>
+  <button id="clearAll">Clear All</button>
+</div>
+
+<script src="../src/canvas-mouse.js"></script>
+<script src="../src/plugin_recorder.js"></script>
+<script>
+
+  var btnClear = document.getElementById("clear");
+  var btnClearAll = document.getElementById("clearAll");
+  var btnRedraw = document.getElementById("redraw");
+  var canvas = document.getElementById("canvas");
+  var ctx = canvas.getContext("2d");
+  var isDown = false;
+  var lastPos;
+
+  // Create a recorder plugin instance
+  var rec = new CMRecorder();
+
+  // Create an instance of our position handler and add recorder plugin
+  var cm = new CanvasMouse(ctx, {plugins: [rec]});
+
+  // line appearance
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#007";
+
+  // handle mouse down, move and up for drawing as well as recorder state
+  canvas.onmousedown = function(e) {
+    isDown = true;
+    lastPos = cm.getPos(e);     // so we can draw lines
+    rec.start();                // start recorder
+  };
+
+  window.onmousemove = function(e) {
+    if (isDown) {
+      var pos = cm.getPos(e);   // will record point automatically as recorder is plugin
+      drawLine(lastPos, pos);
+      lastPos = pos;
+    }
+  };
+
+  window.onmouseup = function() {
+    if (isDown) {
+      isDown = false;
+      rec.stop();               // stop recorder
+    }
+  };
+
+  function drawLine(posFrom, posTo) {
+    ctx.beginPath();
+    ctx.moveTo(posFrom.x, posFrom.y);
+    ctx.lineTo(posTo.x, posTo.y);
+    ctx.stroke();
+  }
+
+  // clears canvas but keeps recorded points
+  btnClear.onclick = function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  // clears canvas and recorded points
+  btnClearAll.onclick = function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    rec.clear();
+  };
+
+  // Redraw recorded points
+  btnRedraw.onclick = function() {
+    this.disabled = btnClear.disabled = true;
+
+    // redraw strokes
+    var strokes = rec.strokes();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    strokes.forEach(function(stroke) {
+      ctx.beginPath();
+      if (stroke.length) {
+        ctx.moveTo(stroke[0].x, stroke[0].y);
+        stroke.forEach(function(pos) {
+          ctx.lineTo(pos.x, pos.y)
+        });
+        ctx.stroke();
+      }
+    });
+
+    this.disabled = btnClear.disabled = false;
+  };
+
+</script>
+</body>
+</html>
