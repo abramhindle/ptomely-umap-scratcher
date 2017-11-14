@@ -1,5 +1,5 @@
 /*!
-	Recorder plugin for Canvas Mouse ver 0.1.0-alpha
+	Recorder plugin for Canvas Mouse ver 0.1.1-alpha
 	Copyright (c) 2017 Epistemex
 	www.epistemex.com
 */
@@ -40,7 +40,7 @@ function CMRecorder() {
     lastPos = pos;
     lastEvent = {x: event.clientX, y: event.clientY, timeStamp: event.timeStamp};
     if (recording) {
-      strokeOrg.push({x: event.clientX, y: event.clientY, timeStamp: event.timeStamp});
+      strokeOrg.push(lastEvent);
       stroke.push(pos);
     }
     return pos
@@ -53,7 +53,7 @@ function CMRecorder() {
   --------------------------------------------------------------------*/
 
   /**
-   * Start recording points and event.
+   * Start recording points and event. Usually called on mouse/touch down.
    */
   this.start = function() {
     if (!recording) {
@@ -64,7 +64,7 @@ function CMRecorder() {
   };
 
   /**
-   * Stop recording points and events.
+   * Stop recording points and events. Usually called on mouse/touch up.
    */
   this.stop = function() {
     if (recording) {

@@ -1,5 +1,5 @@
 /*!
-	canvas-mouse 0.7.0-alpha
+	canvas-mouse 0.8.0-alpha
 	Copyright (c) 2017 Epistemex
 	MIT license.
 */
@@ -22,6 +22,9 @@ function CanvasMouse(context, options) {
   options = Object.assign({
     handleScale: false,
     handleTransforms: false,
+    handleResize: true,
+    handleScroll: true,
+    onchange: null,
     matrix: null,
     plugins: []
   }, options);
@@ -74,28 +77,40 @@ function CanvasMouse(context, options) {
       rect = canvas.getBoundingClientRect(),
       cs = getComputedStyle(canvas),
       prop = cs.getPropertyValue.bind(cs),
-      pInt = parseInt,
+      pFloat = parseFloat,
       _p = "padding-", _b = "border-", _w = "-width",
       L = "left", R = "right", T = "top", B = "bottom";
 
-    paddingBorderLeft = pInt(prop(_p + L)) + pInt(prop(_b + L + _w));
-    paddingBorderTop = pInt(prop(_p + T)) + pInt(prop(_b + T + _w));
+    paddingBorderLeft = pFloat(prop(_p + L)) + pFloat(prop(_b + L + _w));
+    paddingBorderTop = pFloat(prop(_p + T)) + pFloat(prop(_b + T + _w));
     deltaX = rect.left + paddingBorderLeft;
     deltaY = rect.top + paddingBorderTop;
-    scaleX = (canvas.width / (rect.width - (paddingBorderLeft + pInt(prop(_p + R)) + pInt(prop(_b + R + _w))))) || 1;
-    scaleY = (canvas.height / (rect.height - (paddingBorderTop + pInt(prop(_p + B)) + pInt(prop(_b + B + _w))))) || 1;
+    scaleX = (canvas.width / (rect.width - (paddingBorderLeft + pFloat(prop(_p + R)) + pFloat(prop(_b + R + _w))))) || 1;
+    scaleY = (canvas.height / (rect.height - (paddingBorderTop + pFloat(prop(_p + B)) + pFloat(prop(_b + B + _w))))) || 1;
   }
 
   // debounce updates
-  function _handler() {
+  function _handlerResize() {
+    cancelAnimationFrame(ref);
+    ref = requestAnimationFrame(_updateOnResize)
+  }
+
+  // debounce updates
+  function _handlerScroll() {
     cancelAnimationFrame(ref);
     ref = requestAnimationFrame(_updateOnScroll)
+  }
+
+  function _updateOnResize() {
+    init();
+    if (options.onchange) options.onchange({type: "resize", timeStamp: Date.now()});
   }
 
   function _updateOnScroll() {
     var rect = canvas.getBoundingClientRect();
     deltaX = rect.left + paddingBorderLeft;
     deltaY = rect.top + paddingBorderTop;
+    if (options.onchange) options.onchange({type: "scroll", timeStamp: Date.now()});
   }
 
   /*--------------------------------------------------------------------
@@ -271,6 +286,53 @@ function CanvasMouse(context, options) {
   });
 
   /**
+   * Set or get handleScroll status. Can be toggled at any time and will
+   * affect position based on document scrolling.
+   * @member {boolean} CanvasMouse#handleScroll
+   */
+  defProp(me, "handleScroll", {
+    get: function() {return options.handleScroll},
+    set: function(state) {
+      if (state) {
+        window.addEventListener("scroll", _handlerScroll);
+        options.handleScroll = true
+      }
+      else {
+        window.removeEventListener("scroll", _handlerScroll);
+        options.handleScroll = false
+      }
+    }
+  });
+
+  /**
+   * Set or get handleResize status. Can be toggled at any time and will
+   * affect position based on document resizing.
+   * @member {boolean} CanvasMouse#handleResize
+   */
+  defProp(me, "handleResize", {
+    get: function() {return options.handleResize},
+    set: function(state) {
+      if (state) {
+        window.addEventListener("resize", _handlerResize);
+        options.handleResize = true
+      }
+      else {
+        window.removeEventListener("resize", _handlerResize);
+        options.handleResize = false
+      }
+    }
+  });
+
+  /**
+   * Set or get callback handler for resize and scroll events if they are enabled.
+   * @member {boolean} CanvasMouse#onchange
+   */
+  defProp(me, "onchange", {
+    get: function() {return options.onchange},
+    set: function(handler) {options.onchange = handler}
+  });
+
+  /**
    * Set or get custom matrix object. If set will override and patch the
    * provided matrix.
    * @member {Matrix} CanvasMouse#matrix
@@ -293,8 +355,8 @@ function CanvasMouse(context, options) {
   patchMatrix();
   init();
 
-  window.addEventListener("scroll", _handler);
-  window.addEventListener("resize", _handler);
+  me.handleResize = options.handleResize;
+  me.handleScroll = options.handleScroll;
 }
 
 /**
@@ -308,10 +370,14 @@ function CanvasMouse(context, options) {
  * @prop {boolean} [handleTransforms=false] - consider transforms applied to the context when calculating position.
  *  Note that this require either `currentTransform` support on the context,
  *  or the use of a custom Matrix solution (github.com/epistemex/transformation-matrix-js).
+ * @prop {boolean} [handleResize=true] - handles resize of browser window triggering re-initialization
+ * @prop {boolean} [handleScroll=true] - handles scrolling of browser window triggering re-initialization
  * @prop {Matrix} [matrix=null] - to support broader range of browser a custom matrix object can be passed already bound
  *  to the current context (same as passed as argument). Using a custom matrix will require the transforms to be called on this
  *  instead of the context itself.
- *  @prop {Array} [plugins] - array holding plugin objects. Plugins can be added and removed at a later point too.
+ * @prop {Array} [plugins] - array holding plugin objects. Plugins can be added and removed at a later point too.
+ * @prop {Function} [onchange=null] - callback for scroll/resize events. "Event" holds `timeStamp` (integer) and `type` (string) properties. `type` can be "scroll" or "resize".
+ *  Note that this callback is *debounced* and recommended to handle scroll/resize callback to update the canvas.
  */
 
 /**
@@ -319,5 +385,5 @@ function CanvasMouse(context, options) {
  * @name Point
  * @prop {number} x - floating point number for x position
  * @prop {number} y - floating point number for y position
- * @prop {number} timestamp - timestamp for when event happened
+ * @prop {number} timeStamp - timestamp for when event happened
  */

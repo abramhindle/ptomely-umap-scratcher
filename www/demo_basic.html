@@ -15,7 +15,7 @@
   </style>
 </head>
 <body>
-<h2>This is a basic 1:1 (no scale or transforms) example.</h2>
+<h2>This is a basic 1:1 (no scale, transforms, resize or scroll) example.</h2>
 
 <canvas id="canvas" width="500" height="500"></canvas>
 
@@ -28,7 +28,10 @@
   var ctx = canvas.getContext("2d");
 
   // Create an instance of our position handler
-  var cm = new CanvasMouse(ctx);
+  var cm = new CanvasMouse(ctx, {
+    handleScroll: false,
+    handleResize: false
+  });
 
   // draw white background so we can see padding.
   ctx.fillStyle = "#fff";

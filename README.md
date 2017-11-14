@@ -51,10 +51,10 @@ Then in the handler you're using pass the event to get the correct position:
     }
 
 
-Issues
-------
+Known Issues
+------------
 
-Using mouse/touch positions with a transformed context:
+**Using mouse/touch positions with a transformed context:**
 
 The `currentTransform` is not supported by all browsers at the moment.
 Our [custom matrix solution](https://github.com/epistemex/transformation-matrix-js)

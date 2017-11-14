@@ -1,10 +1,17 @@
 Change log for canvas-mouse
 ----------------------
 
+0.8.0
+ADD: Options to turn on or off resize and scroll handling
+ADD: Properties to turn on or off resize and scroll handling
+ADD: "onchange" callback option for resize/scroll (debounced) events.
+FIX: Using float values internally (instead of integer) for border and padding sizes.
+FIX: Documentation "timestamp" corrected to "timeStamp" for point object
+
 0.7.0
 ADD: Plugin interface to integrate with events and converted points (for recorders etc.)
-ADD: timestamp property added to point object
-ADD: Plugin: basic point-recorder + demo
+ADD: timeStamp property added to point object
+ADD: Plugin: basic point-recorder example + demo
 
 0.6.0
 ADD: New properties for handleScale, handleTransforms, matrix
