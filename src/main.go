@@ -3,12 +3,35 @@ package main
 import (
 	"log"
 	"net/http"
-
+	"fmt"
+	"strings"
+	"strconv"
+	
 	"github.com/gorilla/websocket"
+	"github.com/hypebeast/go-osc/osc"
 )
 
 var clients = make(map[*websocket.Conn]bool) // connected clients
+// or *string
+var oscClients = make(map[string]*osc.Client) // connected clients
 var broadcast = make(chan Message)           // broadcast channel
+
+// client Singleton
+func getClient(name string) *osc.Client  {
+	client := oscClients[name]
+	if client == nil {
+		strs := strings.Split(name,":")
+		port, err := strconv.Atoi(strs[1])
+		if err == nil {
+			fmt.Println("Error Converting port number!")
+			return nil
+		}
+		newClient := osc.NewClient(strs[0], port)
+		oscClients[name] = newClient
+		return getClient(name)
+	}
+	return client
+}
 
 // Configure the upgrader
 var upgrader = websocket.Upgrader{
@@ -19,12 +42,14 @@ var upgrader = websocket.Upgrader{
 
 // Define our message object
 type Message struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Message  string `json:"message"`
+	Target  string `json:"target"`
+	Path    string `json:"parth"`
+	Args  []string `json:"args"`
+	Params  []string `json:"params"`
 }
 
 func main() {
+
 	// Create a simple file server
 	fs := http.FileServer(http.Dir("../public"))
 	http.Handle("/", fs)
@@ -68,19 +93,44 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		broadcast <- msg
 	}
 }
+func sendOSCMessage(msg Message) {
+	if len(msg.Args) == len(msg.Params) {
+		conn := getClient(msg.Target)
+		if conn == nil {
+			log.Printf("error: no connection made %v", msg)
+			return
+		}
+		out := osc.NewMessage(msg.Path)
+		for i, arg := range msg.Args {
+			param := msg.Params[i]			
+			if arg == "i" {
+				val, _ := strconv.Atoi(param)
+				out.Append(int32(val))
+			} else if arg == "f" {
+				val, _ := strconv.ParseFloat(param,64)
+				out.Append(float32(val))
+			} else if arg == "d" {
+				val, _ := strconv.ParseFloat(param,64)
+				out.Append(float64(val))
+			} else if arg == "s" {
+				out.Append(param)
+			} else {
+				log.Printf("unsupported type: %v", param)
+			}
+		}
+		log.Printf("Sending %v", out)
+		conn.Send(out)
+	} else {
+		log.Printf("error: args!=params %v", msg)
+	}
+}
 
 func handleMessages() {
 	for {
 		// Grab the next message from the broadcast channel
 		msg := <-broadcast
 		// Send it out to every client that is currently connected
-		for client := range clients {
-			err := client.WriteJSON(msg)
-			if err != nil {
-				log.Printf("error: %v", err)
-				client.Close()
-				delete(clients, client)
-			}
-		}
+		fmt.Printf("Do something %v\n", msg)
+		sendOSCMessage( msg ) 
 	}
 }
