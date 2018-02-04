@@ -7,7 +7,6 @@ new Vue({
         chatContent: '', // A running list of chat messages displayed on the screen
         email: null, // Email address used for grabbing an avatar
         username: null, // Our username
-        joined: false // True if email and username have been filled in
     },
 
     created: function() {
@@ -31,28 +30,16 @@ new Vue({
             if (this.newMsg != '') {
                 this.ws.send(
                     JSON.stringify({
-                        email: this.email,
-                        username: this.username,
-                        message: $('<p>').html(this.newMsg).text() // Strip out html
+                        target: "localhost:8765",
+                        path: "/message/address",
+                        args: ["i","f","s"],
+                        params: ["10","0.01","jajaja"]
                     }
                 ));
                 this.newMsg = ''; // Reset newMsg
             }
         },
 
-        join: function () {
-            if (!this.email) {
-                Materialize.toast('You must enter an email', 2000);
-                return
-            }
-            if (!this.username) {
-                Materialize.toast('You must choose a username', 2000);
-                return
-            }
-            this.email = $('<p>').html(this.email).text();
-            this.username = $('<p>').html(this.username).text();
-            this.joined = true;
-        },
 
         gravatarURL: function(email) {
             return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);

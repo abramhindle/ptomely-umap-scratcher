@@ -22,15 +22,16 @@ func getClient(name string) *osc.Client  {
 	if client == nil {
 		strs := strings.Split(name,":")
 		port, err := strconv.Atoi(strs[1])
-		if err == nil {
-			fmt.Println("Error Converting port number!")
+		if err != nil {
+			fmt.Println("Error Converting port number! %v %v", name, err)
 			return nil
 		}
 		newClient := osc.NewClient(strs[0], port)
 		oscClients[name] = newClient
 		return getClient(name)
+	} else {
+		return client
 	}
-	return client
 }
 
 // Configure the upgrader
@@ -43,7 +44,7 @@ var upgrader = websocket.Upgrader{
 // Define our message object
 type Message struct {
 	Target  string `json:"target"`
-	Path    string `json:"parth"`
+	Path    string `json:"path"`
 	Args  []string `json:"args"`
 	Params  []string `json:"params"`
 }
@@ -97,7 +98,7 @@ func sendOSCMessage(msg Message) {
 	if len(msg.Args) == len(msg.Params) {
 		conn := getClient(msg.Target)
 		if conn == nil {
-			log.Printf("error: no connection made %v", msg)
+			log.Printf("error: no connection made %v %v", conn, msg)
 			return
 		}
 		out := osc.NewMessage(msg.Path)
