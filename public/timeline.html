@@ -19,6 +19,19 @@
       timeLine.addPoint(0.25,1.0);
       timeLine.addPoint(0.75,-1.0);
       timeLine.addPoints([0.1,0.0,0.15,1.0,0.2,0.5]);
+
+      var ui3 = timeLine.makeUI();
+      main.appendChild(  ui3.getDom() );
+      ui3.paint();
+      
+      var timeLine2 = new TimeLine();
+      var timeLineUI2 = timeLine2.makeUI();
+      main.appendChild(  timeLineUI2.getDom() );
+
+      for (var i = 0 ; i < 100; i++) {
+          timeLine2.addPoints([i/100.0, Math.random() * 2 - 1.0]);
+      }
+      
     </script>
   </body>  
 </html>

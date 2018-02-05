@@ -1,3 +1,12 @@
+
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+}
+
 function TimeLineUI( timeLine ) {
     this.timeLine = timeLine;
     this.dom = null;
@@ -58,6 +67,10 @@ function TimeLineUI( timeLine ) {
     
         ctx.stroke();
     };
+    
+    this.mouseDown = function(e) {
+        var x = e.
+    }
     this.update = function() {
         this.paint();
     }
@@ -130,7 +143,7 @@ function TimeLine() {
     };
     this.update = function() {
         for (var i = 0 ; i < this.listeners.length; i++) {
-            this.listeners[0].update();
+            this.listeners[i].update();
         }
     }
     this.conditionalUpdate = function() {
