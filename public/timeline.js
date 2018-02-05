@@ -161,18 +161,51 @@ function TimeLineUI( timeLine ) {
         ctx.fillStyle = 'yellow';
         ctx.fillRect(0,0,width,height);
 
+        if (bottom < 0.0) {
+            var y = height - height * (0 - bottom)/range;
+            ctx.strokeStyle="#FFFFFF";
+            ctx.lineWidth = 2.0;
+            ctx.beginPath();
+            ctx.moveTo(0,y);
+            ctx.lineTo(width,y);
+            ctx.stroke();                        
+            ctx.closePath();
+        }
+        
         // cursor
         var x = width * (this.cursor - start)/trange;
         ctx.strokeStyle="#FFFFFF";
+        ctx.lineWidth = 5.0;
         ctx.beginPath();
         ctx.moveTo(x,0);
         ctx.lineTo(x,height);       
         ctx.stroke();                        
         ctx.closePath();
 
+        // hilight lines
+        ctx.strokeStyle="#FFAA00";
+        ctx.lineWidth = 4.0;
+        ctx.beginPath();
+        for (var i = 0; i < time.length; i++ ) {
+            if (time[i] < start) {
+                // nothing
+            } else if (time[i] > end) {
+                break;
+            } else {
+                var x = width * (time[i] - start)/trange;
+                ctx.moveTo(x,0);
+                ctx.lineTo(x,height);
+                ctx.stroke();                
+            }
+        }
+        ctx.stroke();                        
+        ctx.closePath();
+
+        
         // lines
         ctx.strokeStyle="#000000";     
         ctx.beginPath();
+        ctx.lineWidth = 2.0;
         ctx.moveTo(0, height - height*(s - bottom)/range);
         for (var i = 0; i < time.length; i++) {
             if (time[i] < start) {
@@ -191,23 +224,6 @@ function TimeLineUI( timeLine ) {
         ctx.stroke();
         ctx.closePath();
 
-        // hilight lines
-        ctx.strokeStyle="#FF0000";
-        ctx.beginPath();
-        for (var i = 0; i < time.length; i++ ) {
-            if (time[i] < start) {
-                // nothing
-            } else if (time[i] > end) {
-                break;
-            } else {
-                var x = this._Xs[i];
-                ctx.moveTo(x,0);
-                ctx.lineTo(x,height);
-                ctx.stroke();                
-            }
-        }
-        ctx.stroke();                        
-        ctx.closePath();
 
     };
 
