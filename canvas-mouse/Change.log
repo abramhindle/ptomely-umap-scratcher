@@ -1,0 +1,35 @@
+Change log for canvas-mouse
+----------------------
+
+0.8.0
+ADD: Options to turn on or off resize and scroll handling
+ADD: Properties to turn on or off resize and scroll handling
+ADD: "onchange" callback option for resize/scroll (debounced) events.
+FIX: Using float values internally (instead of integer) for border and padding sizes.
+FIX: Documentation "timestamp" corrected to "timeStamp" for point object
+
+0.7.0
+ADD: Plugin interface to integrate with events and converted points (for recorders etc.)
+ADD: timeStamp property added to point object
+ADD: Plugin: basic point-recorder example + demo
+
+0.6.0
+ADD: New properties for handleScale, handleTransforms, matrix
+CHG: getPosXY() can now take Point object as well as x,y as arguments
+
+0.5.0
+CHG: Options changed from using "levels" to separate booleans (see documentation)
+CHG: Inverse hack always applied (speeds up mouse point conversion with custom matrix object at a slight cost of adding transforms).
+REM: prototype removed since CM is usually only for a single instance.
+
+0.2.0
+ADD: Optional hack for custom matrix to speed up point conversion with transformations
+ADD: Strict mode
+CHG: If currentTransform isn't supported and no custom matrix provided and level=transforms, an error is thrown instead of level-down to scale
+CHG: Custom matrix overrides native currentTransform if provided.
+
+0.1.0
+NEW: Initial release
+
+
+(c) Epistemex 2017
