@@ -1,0 +1,24 @@
+<!doctype html5>
+<html>
+  <head>
+    <title>Timeline</title>
+    <script src="timeline.js"></script>
+    <link rel="stylesheet" href="timeline.css"></link>
+  </head>
+  <body>
+    <div id="main">
+    </div>
+    <script>
+      var main = document.getElementById("main");
+      var timeLine = new TimeLine();
+      var timeLineUI = timeLine.makeUI();
+      main.appendChild(  timeLineUI.getDom() );
+      timeLine.addPoint(0.0,0.0);
+      timeLine.addPoint(1.0,1.0);
+      timeLine.addPoint(0.5,0.5);
+      timeLine.addPoint(0.25,1.0);
+      timeLine.addPoint(0.75,-1.0);
+      timeLine.addPoints([0.1,0.0,0.15,1.0,0.2,0.5]);
+    </script>
+  </body>  
+</html>
