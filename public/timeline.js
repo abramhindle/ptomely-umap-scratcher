@@ -1,11 +1,47 @@
 
-function getMousePos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-        x: evt.clientX - rect.left,
-        y: evt.clientY - rect.top
+// expect canvas-mouse.js
+
+function MouseStartingBehaviour( timeLine, ui ) {
+    this.timeLine = timeLine;
+    this.ui = ui;
+    this.mouseUp = function(self,pos) {
+        return this;
     };
+    this.mouseDown = function(self,pos) {
+        console.log("Mouse Creating Behaviour!");
+        console.log(pos);
+        return new MouseCreatingBehaviour( timeLine, ui );
+    };
+    this.mouseMove = function(self,pos) {
+        return this;
+    };
+    this.mouseOut = function(self,pos) {
+        return this;
+    };
+    return this;
 }
+
+function MouseCreatingBehaviour( timeLine, ui ) {
+    this.timeLine = timeLine;
+    this.ui = ui;
+    this.mouseUp = function(self,pos) {
+        console.log("Actually trying to create point!");
+        ui.addPointFromCanvas(pos);
+        return new MouseStartingBehaviour( timeLine, ui );
+    };
+    this.mouseDown = function(self,pos) {
+        return this;
+    };
+    this.mouseMove = function(self,pos) {
+        return this;
+    };
+    this.mouseOut = function(self,pos) {
+        console.log("OUT!");
+        return new MouseStartingBehaviour( timeLine, ui );
+    };
+    return this;
+}
+
 
 function TimeLineUI( timeLine ) {
     this.timeLine = timeLine;
@@ -14,7 +50,22 @@ function TimeLineUI( timeLine ) {
     this.end = 1.0;
     this.top = 1.0;
     this.bottom = -1.0;
+    this.mouseDelegate = new MouseStartingBehaviour( timeLine, this );
     var self = this;
+    this.getCM = function() {
+        if (this.cm) {
+            return this.cm;
+        }
+        var cm = new CanvasMouse(this.ctx, {
+            handleScale: true,
+            handleTransforms: true
+        });
+        this.cm = cm;
+        return this.cm;
+    }
+    this.getPos = function(e) {
+        return self.getCM().getPos(e);
+    }
     this.getDom = function() {
         if (this.dom !== null) {
             return this.dom;
@@ -27,6 +78,9 @@ function TimeLineUI( timeLine ) {
         canvas.height = 250;
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+
+        this.installCanvasListeners();
+        
         div.appendChild( canvas );
         div.paint = function() {
             self.paint();
@@ -67,13 +121,67 @@ function TimeLineUI( timeLine ) {
     
         ctx.stroke();
     };
-    
+
     this.mouseDown = function(e) {
-        var x = e.
+        e.preventDefault();
+        e.stopPropagation();
+        var pos = self.getPos(e);
+        if (self.mouseDelegate) {
+            self.mouseDelegate = self.mouseDelegate.mouseDown(self,pos);
+        }
     }
+    this.mouseUp = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var pos = self.getPos(e);
+        if (self.mouseDelegate) {
+            self.Delegate = self.mouseDelegate.mouseUp(self,pos);
+        }        
+    }
+    this.mouseMove = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var pos = self.getPos(e);
+        if (self.mouseDelegate) {
+            self.Delegate = self.mouseDelegate.mouseMove(self,pos);
+        }                
+    }
+    this.mouseOut = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (self.mouseDelegate) {
+            self.Delegate = self.mouseDelegate.mouseOut(self,e);
+        }                
+    }
+
     this.update = function() {
         this.paint();
     }
+    this.addPointFromCanvas = function( pos ) {
+        console.log(pos);
+        const time = timeLine.time;
+        const value = timeLine.value;
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        const bottom = this.bottom;
+        const range = this.top - bottom;
+        const start = this.start;
+        const end = this.end;
+        const trange = end - start;
+        const relx = pos.x / (1.0*width);
+        const rely = (height - pos.y) / (1.0*height);
+        var trueTime = trange * relx + start;
+        var trueValue = range*rely + bottom;
+        timeLine.addPoints([trueTime, trueValue]);
+    };
+    this.installCanvasListeners = function() {
+        var canvas = this.canvas;
+        canvas.addEventListener("mousemove",this.mouseMove);
+        canvas.addEventListener("mouseup",this.mouseUp);
+        canvas.addEventListener("mousedown", this.mouseDown);
+        canvas.addEventListener("mouseout", this.mouseout);
+    };
+
     return this;
 }
 
