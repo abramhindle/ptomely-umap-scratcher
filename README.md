@@ -1,3 +1,7 @@
+# Go-oscer
+
+A websocket to OSC webservice for Go. Used to ferry over messages from a time-line based UI
+
 # Formerly from Go Chat
 
 I assume it is under the 2 clause BSD License of Gorilla/websockets
