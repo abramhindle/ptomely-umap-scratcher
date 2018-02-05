@@ -105,7 +105,6 @@ function TimeLineUI( timeLine ) {
     this.top = 1.0;
     this.bottom = -1.0;
     this.mouseDelegate = new MouseStartingBehaviour( timeLine, this );
-    this._Xs = [];
     var self = this;
     this.cursor = -0.1;
     this.getCM = function() {
@@ -214,7 +213,6 @@ function TimeLineUI( timeLine ) {
                 break;
             } else {
                 var x = width * (time[i] - start)/trange;
-                this._Xs[i] = x;
                 var y = height*(value[i] - bottom)/range;
                 // console.log(i + " " + x + " , " + y + " width: " + width + " trange: "+trange + " time: " + time[i] + " value: " + value[i] );
                 ctx.lineTo(x,height - y);
@@ -321,11 +319,10 @@ function TimeLine() {
         for (var i = 1 ; i < this.time.length; i++) {
             if (time <= this.time[i]) {
                 var mix = (time - this.time[i - 1])/(this.time[ i ]  - this.time[ i - 1 ]);
-                return this.value[ i - 1 ] * (1.0 - mix) + (mix)* time.value[ i ];
+                return this.value[ i - 1 ] * (1.0 - mix) + (mix)* this.value[ i ];
             }
         }
-        console.log("Why are we here?");
-        return 0.0;        
+        return this.value[this.value.length - 1];
     };
     this.addPoint = function(time,value) {
         this.dirty = true;
@@ -393,9 +390,7 @@ function TimeLine() {
                 cdist = dist;
             }
         }
-        console.log([close,cdist]);
         var pt = [this.time[close],this.value[close]];
-        console.log(["Point",pt]);
         return pt;
     };
 
@@ -408,7 +403,6 @@ function TimeLine() {
                 return;
             }
         }
-        console.log("Count change:" + (this.time.length - l));
     }
     return this;
 }
