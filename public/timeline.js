@@ -107,6 +107,7 @@ function TimeLineUI( timeLine ) {
     this.mouseDelegate = new MouseStartingBehaviour( timeLine, this );
     this._Xs = [];
     var self = this;
+    this.cursor = -0.1;
     this.getCM = function() {
         if (this.cm) {
             return this.cm;
@@ -160,6 +161,16 @@ function TimeLineUI( timeLine ) {
         ctx.fillStyle = 'yellow';
         ctx.fillRect(0,0,width,height);
 
+        // cursor
+        var x = width * (this.cursor - start)/trange;
+        ctx.strokeStyle="#FFFFFF";
+        ctx.beginPath();
+        ctx.moveTo(x,0);
+        ctx.lineTo(x,height);       
+        ctx.stroke();                        
+        ctx.closePath();
+
+        // lines
         ctx.strokeStyle="#000000";     
         ctx.beginPath();
         ctx.moveTo(0, height - height*(s - bottom)/range);
@@ -179,7 +190,8 @@ function TimeLineUI( timeLine ) {
         ctx.lineTo(width, height - height*(e - bottom)/range);    
         ctx.stroke();
         ctx.closePath();
-        
+
+        // hilight lines
         ctx.strokeStyle="#FF0000";
         ctx.beginPath();
         for (var i = 0; i < time.length; i++ ) {
@@ -196,6 +208,7 @@ function TimeLineUI( timeLine ) {
         }
         ctx.stroke();                        
         ctx.closePath();
+
     };
 
     this.mouseDown = function(e) {
