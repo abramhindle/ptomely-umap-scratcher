@@ -8,9 +8,17 @@ function MouseStartingBehaviour( timeLine, ui ) {
         return this;
     };
     this.mouseDown = function(self,pos) {
-        console.log("Mouse Creating Behaviour!");
-        console.log(pos);
-        return new MouseCreatingBehaviour( timeLine, ui );
+        var pt = ui.closestPointFromCanvas(pos,0.01);
+        if (pt == null) {
+            console.log("Mouse Creating Behaviour!");
+            console.log(pos);
+            pt = ui.addPointFromCanvas(pos);
+            return new MouseMovingBehaviour(pt, timeLine, ui);
+            // return new MouseCreatingBehaviour( timeLine, ui );
+        } else {
+            console.log("Mouse Moving Behaviour!");
+            return new MouseDeleteOrMovingBehaviour(pt, timeLine, ui);
+        }
     };
     this.mouseMove = function(self,pos) {
         return this;
@@ -42,6 +50,52 @@ function MouseCreatingBehaviour( timeLine, ui ) {
     return this;
 }
 
+function MouseMovingBehaviour( pt, timeLine, ui ) {
+    this.timeLine = timeLine;
+    this.ui = ui;
+    this.orig = pt;
+    this.pt = [pt[0],pt[1]];
+    this.mouseUp = function(self,pos) {
+        console.log("We've moved points!");
+        return new MouseStartingBehaviour( timeLine, ui );
+    };
+    this.mouseDown = function(self,pos) {
+        return this;
+    };
+    this.mouseMove = function(self,pos) {
+        timeLine.removePoint( this.pt[0] );
+        var pt1 = ui.addPointFromCanvas(pos);
+        this.pt = pt1;
+        return this;
+    };
+    this.mouseOut = function(self,pos) {
+        console.log("OUT!");
+        return new MouseStartingBehaviour( timeLine, ui );
+    };
+    return this;
+}
+
+
+function MouseDeleteOrMovingBehaviour( pt, timeLine, ui ) {
+    this.mouseUp = function(self,pos) {
+        console.log("We've moved points!");
+        timeLine.removePoint( pt[0] );
+        timeLine.update();
+        return new MouseStartingBehaviour( timeLine, ui );
+    };
+    this.mouseDown = function(self,pos) {
+        return this;
+    };
+    this.mouseMove = function(self,pos) {
+        return new MouseMovingBehaviour(pt, timeLine, ui);
+    };
+    this.mouseOut = function(self,pos) {
+        console.log("OUT!");
+        return new MouseStartingBehaviour( timeLine, ui );
+    };
+    return this;
+}
+
 
 function TimeLineUI( timeLine ) {
     this.timeLine = timeLine;
@@ -51,6 +105,7 @@ function TimeLineUI( timeLine ) {
     this.top = 1.0;
     this.bottom = -1.0;
     this.mouseDelegate = new MouseStartingBehaviour( timeLine, this );
+    this._Xs = [];
     var self = this;
     this.getCM = function() {
         if (this.cm) {
@@ -100,9 +155,12 @@ function TimeLineUI( timeLine ) {
         const bottom = this.bottom;
         const s = timeLine.estimate(start);
         const e = timeLine.estimate(end);
-        const trange = end - start;
+        const trange = end - start;        
+        ctx.strokeStyle="#000000";     
         ctx.fillStyle = 'yellow';
         ctx.fillRect(0,0,width,height);
+
+        ctx.strokeStyle="#000000";     
         ctx.beginPath();
         ctx.moveTo(0, height - height*(s - bottom)/range);
         for (var i = 0; i < time.length; i++) {
@@ -112,14 +170,32 @@ function TimeLineUI( timeLine ) {
                 break;
             } else {
                 var x = width * (time[i] - start)/trange;
+                this._Xs[i] = x;
                 var y = height*(value[i] - bottom)/range;
                 // console.log(i + " " + x + " , " + y + " width: " + width + " trange: "+trange + " time: " + time[i] + " value: " + value[i] );
                 ctx.lineTo(x,height - y);
             }
         }
-        ctx.lineTo(width, height - height*(e - bottom)/range);
-    
+        ctx.lineTo(width, height - height*(e - bottom)/range);    
         ctx.stroke();
+        ctx.closePath();
+        
+        ctx.strokeStyle="#FF0000";
+        ctx.beginPath();
+        for (var i = 0; i < time.length; i++ ) {
+            if (time[i] < start) {
+                // nothing
+            } else if (time[i] > end) {
+                break;
+            } else {
+                var x = this._Xs[i];
+                ctx.moveTo(x,0);
+                ctx.lineTo(x,height);
+                ctx.stroke();                
+            }
+        }
+        ctx.stroke();                        
+        ctx.closePath();
     };
 
     this.mouseDown = function(e) {
@@ -135,7 +211,7 @@ function TimeLineUI( timeLine ) {
         e.stopPropagation();
         var pos = self.getPos(e);
         if (self.mouseDelegate) {
-            self.Delegate = self.mouseDelegate.mouseUp(self,pos);
+            self.mouseDelegate = self.mouseDelegate.mouseUp(self,pos);
         }        
     }
     this.mouseMove = function(e) {
@@ -143,22 +219,21 @@ function TimeLineUI( timeLine ) {
         e.stopPropagation();
         var pos = self.getPos(e);
         if (self.mouseDelegate) {
-            self.Delegate = self.mouseDelegate.mouseMove(self,pos);
+            self.mouseDelegate = self.mouseDelegate.mouseMove(self,pos);
         }                
     }
     this.mouseOut = function(e) {
         e.preventDefault();
         e.stopPropagation();
         if (self.mouseDelegate) {
-            self.Delegate = self.mouseDelegate.mouseOut(self,e);
+            self.mouseDelegate = self.mouseDelegate.mouseOut(self,e);
         }                
     }
 
     this.update = function() {
         this.paint();
     }
-    this.addPointFromCanvas = function( pos ) {
-        console.log(pos);
+    this.estimatePointFromCanvas = function( pos ) {
         const time = timeLine.time;
         const value = timeLine.value;
         const width = this.canvas.width;
@@ -172,14 +247,31 @@ function TimeLineUI( timeLine ) {
         const rely = (height - pos.y) / (1.0*height);
         var trueTime = trange * relx + start;
         var trueValue = range*rely + bottom;
-        timeLine.addPoints([trueTime, trueValue]);
+        var pt = [trueTime, trueValue];
+        return pt;
     };
+    this.addPointFromCanvas = function(pos) {
+        var pt = self.estimatePointFromCanvas( pos );
+        timeLine.addPoints( pt );
+        return pt;
+    };
+    this.closestPointFromCanvas = function(pos, tolerance) {
+        var pt = self.estimatePointFromCanvas( pos );
+        var close = timeLine.getClosestPoint(pt[0]);
+        var dist = Math.abs(pt[0] - close[0]);
+        if ( dist <= tolerance ) {
+            return close;
+        }
+        return null;
+    };
+
+    
     this.installCanvasListeners = function() {
         var canvas = this.canvas;
         canvas.addEventListener("mousemove",this.mouseMove);
         canvas.addEventListener("mouseup",this.mouseUp);
         canvas.addEventListener("mousedown", this.mouseDown);
-        canvas.addEventListener("mouseout", this.mouseout);
+        canvas.addEventListener("mouseout", this.mouseOut);
     };
 
     return this;
@@ -190,6 +282,7 @@ function TimeLine() {
     this.value = [];
     this.listeners = [];
     this.dirty = false;
+    
     this.estimate = function(time) {
         if (time <= 0.0) {
             return this.value[0];
@@ -260,5 +353,33 @@ function TimeLine() {
             this.update();            
         }
     };
+    
+    this.getClosestPoint = function(closeTime) {
+        var close = 0
+        var cdist = Math.abs(closeTime - this.time[close]);
+        for (var i = 0 ; i < this.time.length; i++) {
+            var dist = Math.abs(closeTime - this.time[i]);
+            if (dist < cdist) {
+                close = i;
+                cdist = dist;
+            }
+        }
+        console.log([close,cdist]);
+        var pt = [this.time[close],this.value[close]];
+        console.log(["Point",pt]);
+        return pt;
+    };
+
+    this.removePoint = function(removeTime) {
+        var l = this.time.length;
+        for (var i = 0 ; i < l; i++) {
+            if (this.time[i] == removeTime) {
+                this.time.splice(i, 1);
+                this.value.splice(i, 1);
+                return;
+            }
+        }
+        console.log("Count change:" + (this.time.length - l));
+    }
     return this;
 }
