@@ -1,5 +1,0 @@
-.TimeLine {
-    width: 100%;
-    height: 10em;
-    border: dotted 1px;
-}
