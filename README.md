@@ -2,6 +2,9 @@
 
 A websocket to OSC webservice for Go. Used to ferry over messages from a time-line based UI
 
+* cd src ; go run main.go
+* go to http://localhost:8000/tracker.html
+
 # Formerly from Go Chat
 
 I assume it is under the 2 clause BSD License of Gorilla/websockets
