@@ -1,6 +1,35 @@
 
 // expect canvas-mouse.js
 
+function TimeLineControls( timeLine, timeLineUI ) {
+    // Tasks:
+    // - [X] clear edits
+    // - [ ] clear edits button
+    // - [ ] display/edit path name
+    // - [ ] change UI min
+    // - [ ] change UI max
+    this.timeLine = timeLine;
+    this.timeLineUI = timeLineUI;
+    var self = this;
+    this.clearButton = function() {        
+        self.timeLine.clearToMin();
+    };
+    this.pathChange = function(e) {
+        self.timeLine.name = e.target.value;
+    }
+    this.makeUI = function() {
+        var div = document.createElement("div");
+        var clearButton = document.createElement("button");
+        var path = document.createElement("input");
+        path.value = timeLine.name;
+        path.addEventListener("change", this.pathChange );
+        clearButton.addEventListener("click", this.clearButton );
+        div.appendChild( clearButton );        
+        return div;       
+    }
+    return this;
+}
+
 function MouseStartingBehaviour( timeLine, ui ) {
     this.timeLine = timeLine;
     this.ui = ui;
@@ -407,6 +436,21 @@ function TimeLine() {
                 return;
             }
         }
+    }
+    this.minValue = function() {
+        var minV = value[0];
+        for (var i = 0 ; i < this.value.length; i++) {
+            if (value[i] < minV) {
+                minV = value[i]
+            };
+        }
+        return minV;
+    }
+    this.clearToMin = function() {
+        var minV = this.minValue();
+        this.time = [0.5];
+        this.value = [minV];
+        this.update();
     }
     return this;
 }
