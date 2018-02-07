@@ -16,37 +16,25 @@ SynthDef(\hydro4, {
 	)
 }).add;
 
+~makeLinSetter = {|mySynth,param,low2,hi2,low=0.0,hi=1.0| 
+	{|msg|
+		mySynth.set(param,msg[1].linlin(low,hi,low2,hi2))
+	}
+};
+~makeLinMidiSetter = {|mySynth,param,low2,hi2,low=0.0,hi=1.0| 
+	{|msg|
+		mySynth.set(param,msg[1].linlin(low,hi,low2,hi2).midicps)
+	}
+};
+	
 ~hydro4 = Synth(\hydro4);
 ~hydro4.set(\lpf,2000);
-~handler1 = {|msg|
-	var v;
-	v = msg[1];
-	~hydro4.set(\freq1,msg[1].linlin(0,1,20,100).midicps);
-};
-~handler2 = {|msg|
-	var v;
-	v = msg[1];	
-	~hydro4.set(\freq2,msg[1].linlin(0,1,30,100).midicps);
-};
-~handler3 = {|msg|
-	var v;
-	v = msg[1];	
-	~hydro4.set(\freq3,msg[1].linlin(0,1,50,120).midicps);
-};
-~handler4 = {|msg|
-	var v;
-	v = msg[1];
-	~hydro4.set(\lpf,msg[1].linexp(0,1,200,4000));
-};
-~handler5 = {|msg|
-	var v;
-	v = msg[1];	
-	~hydro4.set(\rq,msg[1].linlin(0,1,0.01,1.0));
-};
 
-OSCFunc.newMatching(~handler1, '/timeline/1');
-OSCFunc.newMatching(~handler2, '/timeline/2');
-OSCFunc.newMatching(~handler3, '/timeline/3');
-OSCFunc.newMatching(~handler4, '/timeline/4');
-OSCFunc.newMatching(~handler5, '/timeline/5');
+OSCFunc.newMatching(~makeLinMidiSetter.(~hydro4,\freq1,40,100), '/hydro4/freq1');
+OSCFunc.newMatching(~makeLinMidiSetter.(~hydro4,\freq2,40,100), '/hydro4/freq2');
+OSCFunc.newMatching(~makeLinMidiSetter.(~hydro4,\freq3,40,100), '/hydro4/freq3');
+OSCFunc.newMatching(~makeLinMidiSetter.(~hydro4,\lpf,1,100), '/hydro4/lpf');
+OSCFunc.newMatching(~makeLinSetter.(~hydro4,\rq,0.0,1.0), '/hydro4/rq');
+OSCFunc.newMatching(~makeLinSetter.(~hydro4,\amp,0.0,1.0), '/hydro4/amp');
+
 
