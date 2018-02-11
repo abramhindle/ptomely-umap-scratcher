@@ -1,0 +1,87 @@
+<!doctype html5>
+<html>
+  <head>
+    <title>Basic.sc</title>
+    <script src="canvas-mouse.js"></script>
+    <script src="timeline.js"></script>
+    <script src="sequencer.js"></script>
+    <link rel="stylesheet" href="timeline.css"></link>
+  </head>
+  <body>
+    <div id="main">
+    </div>
+    <script>
+var main = document.getElementById("main");
+var globalDuration = 60.0;
+var ticks = 15.0;
+var osctarget = "localhost:57120";
+var ws = new WebSocket('ws://' + window.location.host + '/ws');
+var ready = false;
+ws.onopen = function() {
+    ready = true;
+}
+ws.addEventListener('message', function(e) {
+    var msg = JSON.parse(e.data);
+    console.log(msg);
+});
+
+var sender = function(path, value, sequencer, timeline) {
+    if (ready) {
+        ws.send(
+            JSON.stringify({
+                target: osctarget,
+                path: path,
+                args: ["f"],
+                params: [""+value]
+            }));
+    }
+};
+
+var seq = new Sequencer({ticks: ticks, duration: globalDuration, delegate: sender});
+var defs = [
+    {"path":"/hydro4/amp"},
+    {"path":"/hydro4/freq1"},
+    {"path":"/hydro4/freq2"},
+    {"path":"/hydro4/freq3"},
+    {"path":"/hydro4/lpf"},
+    {"path":"/hydro4/rq"},
+    {"background":"#AAAAFF","path":"/singrain/emit"},
+    {"background":"#AAAAFF","path":"/singrain/amp"},
+    {"background":"#AAAAFF","path":"/singrain/freq"},
+    {"background":"#AAAAFF","path":"/singrain/sustain"},
+    {"background":"#AAFFFF","path":"/noisegrain/emit"},
+    {"background":"#AAFFFF","path":"/noisegrain/amp"},
+    {"background":"#AAFFFF","path":"/noisegrain/freq"},
+    {"background":"#AAFFFF","path":"/noisegrain/sustain"},
+    {"background":"#FF99FF","path":"/blipsaw/amp"},
+    {"background":"#FF99FF","path":"/blipsaw/freq"},
+    {"background":"#FF99FF","path":"/blipsaw/harmfreq"},
+    {"background":"#FF99FF","path":"/blipsaw/delaytime"},
+    {"background":"#FF99FF","path":"/blipsaw/decaytime"},
+    {"background":"#FF99FF","path":"/blipsaw/ffreq"},
+    {"background":"#FF99FF","path":"/blipsaw/ffmul"},
+    {"background":"#FF99FF","path":"/blipsaw/hmul"},
+    {"background":"#AAAAAA","path":'/pinknoiser/amp'      },
+    {"background":"#AAAAAA","path":'/pinknoiser/lpf'      },
+    {"background":"#AAAAAA","path":'/pinknoiser/shift'    },
+    {"background":"#AAAAAA","path":'/pinknoiser/pitchdisp'},
+    {"background":"#AAAAAA","path":'/pinknoiser/timedisp' },
+    
+];
+for (var i = 0; i < defs.length; i++) {
+    var tlu = seq.generateTimeLineAndUI();
+    var timeLine = tlu[0];
+    timeLine.name = defs[i].path;
+    var timeLineUI = tlu[1];
+    if (defs[i].background) {
+        timeLineUI.background = defs[i].background;
+    }
+    timeLineUI.bottom = 0.0;
+    main.appendChild(  timeLineUI.getDom() );
+    timeLine.addPoints([0.5,0.0]);          
+}
+seq.start();
+
+    </script>
+  </body>  
+</html>
