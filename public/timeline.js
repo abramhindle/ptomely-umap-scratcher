@@ -17,16 +17,20 @@ function TimeLineControls( timeLine, timeLineUI ) {
     this.pathChange = function(e) {
         self.timeLine.name = e.target.value;
     }
-    this.makeUI = function() {
+    this.getDom = function() {
         var div = document.createElement("div");
+        div.classList.add('timelineControl');
         var clearButton = document.createElement("button");
+        clearButton.innerHTML = 'clear';
         var path = document.createElement("input");
+        path.classList.add('tcpath');
         path.value = timeLine.name;
         path.addEventListener("change", this.pathChange );
         clearButton.addEventListener("click", this.clearButton );
-        div.appendChild( clearButton );        
+        div.appendChild( path );
+        div.appendChild( clearButton );
         return div;       
-    }
+    };
     return this;
 }
 
@@ -438,10 +442,10 @@ function TimeLine() {
         }
     }
     this.minValue = function() {
-        var minV = value[0];
+        var minV = this.value[0];
         for (var i = 0 ; i < this.value.length; i++) {
-            if (value[i] < minV) {
-                minV = value[i]
+            if (this.value[i] < minV) {
+                minV = this.value[i]
             };
         }
         return minV;
