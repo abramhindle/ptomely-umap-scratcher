@@ -9,6 +9,8 @@ function Sequencer(args) {
     }
     this.uis = [];
     this.tls = [];
+    this.tableUIs = [];
+    this.tables = [];
     var self = this;
     this.generateTimeLineAndUI = function() {
         var id = this.uis.length;
@@ -17,6 +19,18 @@ function Sequencer(args) {
         tl.name = "/timeline/"+id;
         this.tls[id] = tl;
         this.uis[id] = ui;
+        return [tl,ui];
+    };
+    this.generateTableAndUI = function(n) {
+        if (!n || n < 1) {
+            n = 16;
+        }
+        var id = this.tableUIs.length;
+        var tl = new Table(n,0.0);
+        var ui = tl.makeUI();
+        tl.name = "/table/"+id;
+        this.tables[id] = tl;
+        this.tableUIs[id] = ui;
         return [tl,ui];
     };
     this.callBack = function() {
@@ -33,6 +47,14 @@ function Sequencer(args) {
             var v = self.tls[i].estimate(proportion);
             self.send(self.tls[i].name,v,self.tls[i]);
         }
+        for (var i = 0 ; i < self.tables.length; i++) {
+            if (self.tables[i].isDirty()) {
+                var values = self.tables[i].value
+                self.send(self.tables[i].name,values,self.tables[i]);
+                self.tables[i].clean();
+            }
+        }
+
     };
     this.start = function() {
         console.log("Starting callback");

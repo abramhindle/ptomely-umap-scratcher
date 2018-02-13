@@ -1,9 +1,9 @@
-.TimeLine {
+.TimeLine, .Table {
     width: 100%;
     height: 4em;
     border: dotted 1px;
 }
-.TimeLineCanvas {
+.TimeLineCanvas, .TableCanvas {
     width: 100%;
     height: 100%;
     background: yellow;
@@ -16,6 +16,6 @@
 .timelineControl {
     flex: 1 1 17%;
 }
-.TimeLine  {
+.TimeLine, .Table  {
     flex: 1 1 80%;
 }
