@@ -177,4 +177,106 @@ SynthDef(\noiser,{arg out=0,lpf=0.0,shift=0.0,pitchdisp=0.0,timedisp=0.0,pink=0.
 			)!2
 			,-0.9,0.9)
 		);
-	}).add;
+	}).add
+;
+
+
+(
+	Ndef(\x,	{
+		var output;
+		var delayTime;
+		var delayMax = 0.22;
+		var delayAdd = 0.07;
+		var pulseFreq = 0.5;
+		var proxyMul = 10;
+		var pulseMin = 30;
+		var pulseMax = 150;
+		var numOfEchos = 6;
+		var mainPulse = LFPulse.ar(pulseFreq, 0, 0.5).range(pulseMin, pulseMax);
+		var proxy = Ndef(\x).ar * proxyMul;
+		var ampModFreq = SinOsc.ar(0.01, 0).range(0.3, 30);
+		var ampMod = LFNoise2.ar(ampModFreq, 6);
+		output = SinOsc.ar(mainPulse + proxy, 0, ampMod).tanh;
+		numOfEchos.do{
+			delayTime = {delayMax.rand + delayAdd}!2;
+			output = AllpassL.ar(output, 0.1, delayTime, 5);
+		};
+	output.tanh;
+	}).play
+)
+
+(
+	Ndef(\z,	{
+		var output;
+		var delayTime;
+		var delayMax = 0.22;
+		var delayAdd = 0.07;
+		var pulseFreq = 0.5;
+		var proxyMul = 10;
+		var pulseMin = 30;
+		var pulseMax = 2000;
+		var numOfEchos = 6;
+		var mainPulse = LFPulse.ar(pulseFreq, 0, 0.5).range(pulseMin, pulseMax);
+		var proxy = Ndef(\z).ar * proxyMul;
+		var ampModFreq = SinOsc.ar(0.01, 0).range(0.3, 30);
+		var ampMod = LFNoise2.ar(ampModFreq, 6);
+		output = SinOsc.ar(mainPulse + proxy, 0, ampMod).tanh;
+		numOfEchos.do{
+			delayTime = {delayMax.rand + delayAdd}!2;
+			output = AllpassL.ar(output, 0.1, delayTime, 5);
+		};
+	output.tanh * 0.5;
+	}).play
+)
+
+
+
+(
+	Ndef(\y,	{
+		var output;
+		var delayTime;
+		var delayMax = 0.2;
+		var delayAdd = 0.07;
+		var pulseFreq = 0.5;
+		var proxyMul = 2;
+		var pulseMin = 40;
+		var pulseMax = 130;
+		var numOfEchos = 1;
+
+		var mainPulse = LFPulse.ar(pulseFreq, 0, 0.5).range(pulseMin, pulseMax);
+		var proxy = Ndef(\y).ar * proxyMul;
+		var ampModFreq = SinOsc.ar(0.01, 0).range(0.3, 30);
+		var ampMod = LFNoise2.ar(ampModFreq, 1+proxy);
+		output = SinOsc.ar(mainPulse, 0, ampMod).tanh;
+		output = AllpassL.ar(output, 0.1, 0.1, 5);		
+		output.tanh
+	}).play
+)
+
+
+(
+Ndef(\y,	{
+	arg pulseFreq = 0.5;
+	var output;
+	var mainPulse = LFNoise2.ar(freq:pulseFreq, mul: 1.0, add:0.1).range(80,160);
+	output = SinOsc.ar(mainPulse + (Ndef(\y).ar * 4), 0, 1.0).tanh;
+	output = AllpassL.ar(output, 0.1, 0.1, 5);		
+	output.tanh
+}).play
+)
+
+
+n=LFNoise1;Ndef(\x,{a=SinOsc.ar(65,Ndef(\x).ar*n.ar(0.1,3),n.ar(3,6)).tanh;9.do{a=AllpassL.ar(a,0.3,{0.2.rand+0.1}!2,5)};a.tanh}).play
+
+
+n=LFNoise0;
+Ndef(\x,
+	{
+		var output;
+		output=SinOsc.ar(65,Ndef(\x).ar*n.ar(0.1,3).tanh + 1.4,n.ar(3,6)+0.1).tanh;
+		32.do{ output=AllpassL.ar(output + (0.5.rand * Ndef(\x).ar),0.3,{0.42.rand+0.01},5) };
+		output.tanh
+	}
+).play
+
+

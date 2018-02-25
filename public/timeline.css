@@ -19,3 +19,7 @@
 .TimeLine, .Table  {
     flex: 1 1 80%;
 }
+.dotted {
+    border: 1px dotted;
+    padding: 2px;
+}
