@@ -280,3 +280,71 @@ Ndef(\x,
 ).play
 
 
+
+
+SynthDef(\trisynth, {
+	|out=0,bufsize=32,amp=0.0,lpfreq=440,lprq=0.5,b1,b2,b3,b1rate,b2rate,b3rate|
+	Out.ar(out,
+		amp * 
+		BLowPass4.ar(
+			(PlayBuf.ar(1, bufnum:b1, rate:b1rate, loop: 1) +
+				PlayBuf.ar(1, bufnum:b2, rate:b2rate, loop: 1) +
+				PlayBuf.ar(1, bufnum:b3, rate:b3rate, loop: 1)) * 0.3,
+			freq: lpfreq,
+			rq: lprq
+		)
+	);
+}).load(s);
+
+~makeTriSynth = {
+	|bufsize=32,out=0|
+	var b1,b2,b3,syn, outd;
+	outd = ();
+	outd["b1"] = b1;
+	b1 = Buffer.alloc(s, bufsize, 1);
+	b2 = Buffer.alloc(s, bufsize, 1);
+	b3 = Buffer.alloc(s, bufsize, 1);
+	syn = Synth(\trisynth,[
+		\out,out,
+		\bufsize, bufsize,
+		\b1, b1.bufnum,
+		\b2, b2.bufnum,
+		\b3, b3.bufnum,
+		\b1rate, 1.0,
+		\b2rate, 1.0,
+		\b3rate, 1.0
+	]);
+	outd[\bufsize] = bufsize;
+	outd[\b1] = b1;
+	outd[\b2] = b2;
+	outd[\b3] = b3;
+	outd[\synth] = syn;
+	outd;
+};
+
+~tri = ~makeTriSynth.();
+~trisynth = ~tri[\synth];
+// ~tri[\b1].setn(0,(1 .. 200) / 200.0)
+
+~makeArrayBufSetter = { |buf,bufsize|
+	{
+		|msg|
+		buf.setn(0,msg[ 1 .. bufsize ].asFloat);
+	}
+};
+~makeExpSetter = {|mySynth,param,low2=0.0,hi2=1.0,low=0.0,hi=1.0| 
+	{|msg|
+		mySynth.set(param,msg[1].linexp(low,hi,low2,hi2))
+	}
+};
+
+OSCFunc.newMatching(~makeLinSetter.(~trisynth,\amp,0.0,1.0),    '/trisynth/amp');
+OSCFunc.newMatching(~makeExpSetter.(~trisynth,\b1rate,0.01,2.0),    '/trisynth/b1rate');
+OSCFunc.newMatching(~makeExpSetter.(~trisynth,\b2rate,0.01,2.0),    '/trisynth/b2rate');
+OSCFunc.newMatching(~makeExpSetter.(~trisynth,\b3rate,0.01,2.0),    '/trisynth/b3rate');
+OSCFunc.newMatching(~makeLinMidiSetter.(~trisynth,\lpfreq,20,100),    '/trisynth/lpf');
+OSCFunc.newMatching(~makeLinSetter.(~trisynth,\lprq,0.001,1.0),    '/trisynth/lprq');
+
+OSCFunc.newMatching(~makeArrayBufSetter.(~tri[\b1],~tri[\bufsize]), '/trisynth/b1');
+OSCFunc.newMatching(~makeArrayBufSetter.(~tri[\b2],~tri[\bufsize]), '/trisynth/b2');
+OSCFunc.newMatching(~makeArrayBufSetter.(~tri[\b3],~tri[\bufsize]), '/trisynth/b3');
