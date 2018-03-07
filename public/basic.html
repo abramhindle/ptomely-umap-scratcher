@@ -7,7 +7,21 @@
     <script src="sequencer.js"></script>
     <link rel="stylesheet" href="timeline.css"></link>
   </head>
-  <body>
+    <body>
+        <div id="controls">
+    <button id="addTimeLine">+TL</button>
+    <span class="dotted">
+    <button id="addTable">+Table</button>
+    <select id="tableSize">
+    <option selected>16</option>
+    <option>32</option>
+    <option>64</option>
+    <option>128</option>
+    <option>256</option>    
+    </select>
+    </span>
+    </div>
+
     <div id="main">
     </div>
     <script>
@@ -77,15 +91,48 @@ var defs = [
     {"background":"#AAFFAA","path":'/trisynth/lprq'    },
     
 ];
-for (var i = 0; i < defs.length; i++) {
-    var tlu = seq.generateTimeLineAndUI();
-    var timeLine = tlu[0];
-    timeLine.name = defs[i].path;
-    var timeLineUI = tlu[1];
-    if (defs[i].background) {
-        timeLineUI.background = defs[i].background;
+//for (var i = 0; i < defs.length; i++) {
+//    var tlu = seq.generateTimeLineAndUI();
+//    var timeLine = tlu[0];
+//    timeLine.name = defs[i].path;
+//    var timeLineUI = tlu[1];
+//    if (defs[i].background) {
+//        timeLineUI.background = defs[i].background;
+//    }
+//    timeLineUI.bottom = 0.0;
+//    // main.appendChild( );
+//    var tc = new TimeLineControls( timeLine, timeLineUI );
+//    var container = document.createElement("div");
+//    container.classList.add('tccontainer');
+//    container.appendChild(
+//        tc.getDom()
+//    );
+//    container.appendChild(
+//        timeLineUI.getDom()
+//    );
+//    //main.appendChild( tc.makeUI() );
+//    //main.appendChild(  
+//    main.appendChild(container);
+//    timeLine.addPoints([0.5,0.0]);          
+//}
+function addDef(def) {
+    if (def.table) {
+        var ts = document.getElementById("tableSize");
+        var size = parseInt(ts.options[ts.selectedIndex].text);
+        console.log(size);
+        var tlu = seq.generateTableAndUI(size);
+    } else {
+        var tlu = seq.generateTimeLineAndUI();
     }
-    timeLineUI.bottom = 0.0;
+    var timeLine = tlu[0];
+    timeLine.name = def.path;
+    var timeLineUI = tlu[1];
+    if (def.background) {
+        timeLineUI.background = def.background;
+    }
+    if (!def.table) {
+        timeLineUI.bottom = 0.0;
+    }
     // main.appendChild( );
     var tc = new TimeLineControls( timeLine, timeLineUI );
     var container = document.createElement("div");
@@ -96,12 +143,45 @@ for (var i = 0; i < defs.length; i++) {
     container.appendChild(
         timeLineUI.getDom()
     );
-    //main.appendChild( tc.makeUI() );
-    //main.appendChild(  
     main.appendChild(container);
-    timeLine.addPoints([0.5,0.0]);          
+    if (!def.table) {
+        timeLine.addPoints([0.5,0.0]);
+    }
 }
+
+for (var i = 0; i < defs.length; i++) {
+    addDef(defs[i]);
+}
+
 seq.start();
+
+var addTimeLine = document.getElementById("addTimeLine");
+var addTable = document.getElementById("addTable");
+
+function generateNewDef() {
+    var def = {
+        "path":"/timeline/"+(defs.length+1)
+    };    
+    addDef(def);
+    defs.push(def);
+}
+function generateNewTableDef() {
+    var def = {
+        "path":"/table/"+(defs.length+1),
+        "table":true
+    };    
+    addDef(def);
+    defs.push(def);
+}
+
+
+addTimeLine.addEventListener("click",function() {
+    generateNewDef();
+});
+addTable.addEventListener("click",function() {
+    generateNewTableDef();
+});
+
 
     </script>
   </body>  
