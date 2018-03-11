@@ -279,4 +279,11 @@ Ndef(\x,
 	}
 ).play
 
-
+~fund = 111.0;
+~fund = ~fund * 0.999;
+~hydro4.set(\rq,0.9);
+~hydro4.set(\lpf,4.5*~fund);
+~hydro4.set(\freq2,2*~fund);
+~hydro4.set(\freq3,3*~fund);
+~hydro4.set(\freq1,4*~fund);
+~fund
