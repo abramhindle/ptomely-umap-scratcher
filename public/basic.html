@@ -41,15 +41,27 @@ ws.addEventListener('message', function(e) {
 
 var sender = function(path, value, sequencer, timeline) {
     if (ready) {
+        // this is dumb :/
+        if (Array.isArray(value)) {
+            var args = value.map(function(x){ return "f" });
+            var params = value.map(function(x) { return ""+x});
+            
+        } else {
+            var args = ["f"];
+            var params = [""+value]; 
+        }
         ws.send(
             JSON.stringify({
                 target: osctarget,
                 path: path,
-                args: ["f"],
-                params: [""+value]
+                args: args,
+                params: params
             }));
     }
+    return ready;
 };
+
+
 
 var seq = new Sequencer({ticks: ticks, duration: globalDuration, delegate: sender});
 var defs = [
