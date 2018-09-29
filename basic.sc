@@ -155,6 +155,7 @@ SynthDef(\quadsynth, {
 	
 ~hydro4 = Synth(\hydro4);
 ~hydro4.set(\lpf,2000);
+~hydro4.set(\amp,0);
 
 OSCFunc.newMatching(~makeLinMidiSetter.(~hydro4,\freq1,40,100), '/hydro4/freq1');
 OSCFunc.newMatching(~makeLinMidiSetter.(~hydro4,\freq2,40,100), '/hydro4/freq2');
@@ -413,7 +414,7 @@ OSCdef(\rsb3,~makeArrayBufSetter.(~ring[\b3],~ring[\bufsize]), '/ringsynth/b3');
 
 
 
-
+/*
 ~fund = 111.0;
 ~fund = ~fund * 0.999;
 ~hydro4.set(\rq,0.9);
@@ -423,7 +424,9 @@ OSCdef(\rsb3,~makeArrayBufSetter.(~ring[\b3],~ring[\bufsize]), '/ringsynth/b3');
 ~hydro4.set(\freq1,4*~fund);
 ~fund
 ().play
-
+*/
+/*
 ~trisynth.autogui
 
 ~tri[\b1].plot
+*/
