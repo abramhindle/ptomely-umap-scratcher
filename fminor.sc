@@ -1,13 +1,17 @@
  //s.boot;
 
+// 24 is is cminor
+
 // 29 is F1
 // F G Ab Bb C Db Eb
 // 0 2 3  5  7 8  10
 // check
 
+~centerkey = 29; // fminor
+~centerkey = 24; // cminor
 
-~ffreqs = Scale.minor.degreeToFreq((0..(8*7)), 29.midicps, 0);
-~fnotes = (0..7).collect {|x| (Scale.minor.degrees) + (x*12)+29 }.flatten;
+~ffreqs = Scale.minor.degreeToFreq((0..(8*7)), ~centerkey.midicps, 0);
+~fnotes = (0..7).collect {|x| (Scale.minor.degrees) + (x*12)+~centerkey }.flatten;
 
 // need these for F
 //    I – G major, G major seventh (Gmaj, Gmaj7)
