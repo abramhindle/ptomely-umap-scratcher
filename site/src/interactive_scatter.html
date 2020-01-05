@@ -91,9 +91,10 @@
 				// Audio
 				listener = new THREE.AudioListener();
 				camera.add(listener);
-				sound = new THREE.Audio(listener)	
+				sound = new THREE.Audio(listener);
+				sound.setLoop(false);
+				sound.setVolume(1.0);
 				audioLoader = new THREE.AudioLoader();
-				
 				
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 'black' );
