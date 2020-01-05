@@ -8,6 +8,8 @@ It requires a Python 3.6+ environment and node package manager to run the web se
 
 It makes use of the FluCoMa tools for audio analysis and statistics. Big thanks to the team at Huddersfield University for these tools!
 
+www.flucoma.org
+
 BSD 3-Clause License
 
 Copyright (c) [year], [fullname]
