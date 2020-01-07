@@ -8,7 +8,10 @@
 	</head>
 	<body>
 		<div id="info">
-			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - dataset explorer
+			dimensionality reduction using <a href="https://umap-learn.readthedocs.io/en/latest/" target="blank">MFCC analysis and UMAP</a><br>
+			The full code is available here <a href="https://github.com/jamesb93/ptolemy" target="blank">at my github</a><br>
+			<strong>Left Click - Rotate | Right Click - Drag Scene | Scroll - Zoom</strong><br>
+			<i>Mouseover points to hear the sample</i>
 		</div>
 
 		<script type="x-shader/x-vertex" id="vertexshader">
@@ -45,8 +48,6 @@
 
 				gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
 
-				if ( gl_FragColor.a < ALPHATEST ) discard;
-
 			}
 
 		</script>
@@ -56,12 +57,12 @@
 			import Stats from '../node_modules/three/examples/jsm/libs/stats.module.js';
 			import { GUI } from '../node_modules/three/examples/jsm/libs/dat.gui.module.js';
 			import { OrbitControls } from '../node_modules/three/examples/jsm/controls/OrbitControls.js';
+			import { FlyControls } from '../node_modules/three/examples/jsm/controls/FlyControls.js';
 
 		
 			var renderer, scene, camera, stats, controls;
 
 			var particles;
-			var baseParticleSize = 10;
 			
 			var raycaster, intersects;
 			var mouse, INTERSECTED;
@@ -71,6 +72,13 @@
 			
 			var data, metadata;
 
+			// Set up some global parameters
+			var params = {
+				config: 'reduce.json',
+				baseParticleSize: 10,
+				backgroundColor: 'black',
+			};
+
 			function loadData(json) {
 				data = json.data;
 				metadata = json.meta;
@@ -78,11 +86,13 @@
 				animate();
 			}
 			
-			fetch("../plots/d3_reduce_3.json")
+			fetch("../plots/" + params.config)
 				.then(response => response.json())
 				.then(json => loadData(json))
 
+
 			function init() {
+
 				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000 );
 				camera.position.z = 2000;
 				// Audio
@@ -94,50 +104,50 @@
 				sound.setVolume(1.0);
 
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 'black' );
+				scene.background = new THREE.Color(params.backgroundColor);
 
-				var ut_coords = [];
-				var color = new THREE.Color();
-				var colors = new Float32Array(data.length * 3)
-				var sizes = new Float32Array(data.length)
-				
+
+				var colors = new Float32Array(data.length * 3);
+				var coords = new Float32Array(data.length * 3);
+				var sizes = new Float32Array(data.length);
+
 				for (var i=0; i < data.length; i++) {
-					var x = data[i].x * 2000 - 1000;
-					var y = data[i].y * 2000 - 1000;
-					var z = data[i].z * 2000 - 1000;
-					ut_coords.push(x, y, z);
+					coords[(i * 3) + 0] = data[i].x * 2000 - 1000;
+					coords[(i * 3) + 1] = data[i].y * 2000 - 1000;
+					coords[(i * 3) + 2] = data[i].z * 2000 - 1000;
 					// Sizes
-					sizes[i] = baseParticleSize;
+					sizes[i] = params.baseParticleSize;
 					// Colour
 					var hue;
+					var sat;
 					if (data[i].cluster != -1) {
 						hue = data[i].cluster / metadata[0];
+						sat = 1 - hue;
 					} else {
 						hue = 0.0;
+						sat = 1 - huge;
 					}
-					color.setHSL(hue, 0.5, 0.5);
+					var color = new THREE.Color();
+					color.setHSL(hue, sat, 0.7);
 					color.toArray(colors, i*3);
-
 				}
-				
-				var coords = Float32Array.from(ut_coords);
-				
+			
 				var geometry = new THREE.BufferGeometry();
 				geometry.setAttribute( 'position', new THREE.BufferAttribute(coords, 3));
 				geometry.setAttribute( 'customColor', new THREE.BufferAttribute(colors, 3));
 				geometry.setAttribute( 'size', new THREE.BufferAttribute(sizes, 1));
 
+
 				var material = new THREE.ShaderMaterial({
 					uniforms: {
 						color: {value: new THREE.Color(0xffffff)},
-						pointTexture: {value: new THREE.TextureLoader().load( "textures/sprites/ball.png")}
+						pointTexture: {value: new THREE.TextureLoader().load( "textures/sprites/circle.png")}
 					},
 					vertexShader: document.getElementById( 'vertexshader' ).textContent,
 					fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-					alphaTest: 0.00000000001
 				});
 
-				particles = new THREE.Points( geometry, material );
+				particles = new THREE.Points(geometry, material);
 				scene.add( particles );
 
 
@@ -147,12 +157,14 @@
 				document.body.appendChild( renderer.domElement );
 
 				// Camera Controls
+
 				controls = new OrbitControls(camera, renderer.domElement);
-				controls.enableDamping = false;
+
+				controls.enableDamping = true;
 				controls.dampingFactor = 0.1;
-				controls.screenSpacePanning = true;
+				controls.screenSpacePanning = false;
 				controls.minDistance = 30;
-				controls.maxDistance = 5000;
+				controls.maxDistance = 3000;
 				controls.maxPolarAngle = Math.PI / 2;
 
 				// Mouse intersection Logic
@@ -170,13 +182,55 @@
 				gui.add(camera, 'fov', 45, 160).onChange(function () {
 					camera.updateProjectionMatrix()
 				});
-				// gui.add(baseParticleSize, , 4, 30)
+				
+				gui.add(params, 'baseParticleSize', 3, 30).onChange(function() {
+					var geometry = particles.geometry;
+					var attributes = geometry.attributes;
+					for (var i=0; i < data.length; i++) {
+						attributes.size.array[i] = params.baseParticleSize;
+					}
+					attributes.size.needsUpdate = true;
+				});
+
+				function updateConfig(json){
+					data = json.data;
+					metadata = json.meta;
+					var geometry = particles.geometry;
+					var attributes = geometry.attributes;
+
+					for (var i=0; i < data.length; i++) {
+						coords[(i * 3) + 0] = data[i].x * 2000 - 1000;
+						coords[(i * 3) + 1] = data[i].y * 2000 - 1000;
+						coords[(i * 3) + 2] = data[i].z * 2000 - 1000;
+						// Sizes
+						sizes[i] = params.baseParticleSize;
+						// Colour
+						var hue;
+						var sat;
+						if (data[i].cluster != -1) {
+							hue = data[i].cluster / metadata[0];
+							sat = 1 - hue;
+						} else {
+							hue = 0.0;
+							sat = 1 - huge;
+						}
+						var color = new THREE.Color();
+						color.setHSL(hue, sat, 0.7);
+						color.toArray(colors, i*3);
+					}
+
+					attributes.position.needsUpdate = true;
+					attributes.customColor.needsUpdate = true;
+				}
+				gui.add(params, 'config', ['reduce.json', 'dense.json', 'superSparse.json', 'sparse.json']).onChange(function() {
+					fetch("../plots/" + params.config)
+						.then(response => response.json())
+						.then(json => updateConfig(json))
+				});
 
 				gui.open();
-
-				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-				window.addEventListener( 'resize', onWindowResize, false );
-
+				document.addEventListener('mousemove', onDocumentMouseMove, false );
+				window.addEventListener('resize', onWindowResize, false );
 			}
 
 			function onDocumentMouseMove( event ) {
@@ -209,9 +263,9 @@
 				intersects = raycaster.intersectObject(particles);
 				if (intersects.length > 0){
 					if (INTERSECTED != intersects[0].index) {
-						attributes.size.array[INTERSECTED] = baseParticleSize;
+						attributes.size.array[INTERSECTED] = params.baseParticleSize;
 						INTERSECTED = intersects[0].index;
-						attributes.size.array[INTERSECTED] = baseParticleSize * 4;
+						attributes.size.array[INTERSECTED] = params.baseParticleSize * 4;
 						attributes.size.needsUpdate = true;
 
 						if (data[INTERSECTED].name) {
@@ -219,13 +273,12 @@
 							function(buffer) {
 								sound.setBuffer(buffer);
 								sound.play();
-								console.log("played/playing")
 						});
 						}
 
 					}
 				} else if (INTERSECTED !== null) {
-					attributes.size.array[INTERSECTED] = baseParticleSize;
+					attributes.size.array[INTERSECTED] = params.baseParticleSize;
 					attributes.size.needsUpdate = true;
 					INTERSECTED = null;
 					if (sound.isPlaying) {
