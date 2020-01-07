@@ -1,16 +1,19 @@
 import argparse, umap, os, hdbscan
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.cluster import AgglomerativeClustering
 from utils import read_json, write_json, check_make
 
 this_script = os.path.dirname(os.path.realpath(__file__))
 
 parser = argparse.ArgumentParser(description='Reduce the data from an analysis file')
 parser.add_argument('-i', '--infile', type=str, help='The input folder to analyse')
-parser.add_argument('-o', '--outfile', type=str, help='The output json')
+parser.add_argument('-o', '--outfile', type=str, default='reduce.json', help='The output json')
 parser.add_argument('-n', '--neighbours', type=int, default='7', help='Number of neighbours for UMAP.')
 parser.add_argument('-m', '--mindist', type=float, default='0.1', help='Minimum distance for neighbourhood for UMAP')
-parser.add_argument('-c', '--components', type=int, default='2', help='Number of components to reduce to')
+parser.add_argument('-c', '--components', type=int, default='3', help='Number of components to reduce to')
+parser.add_argument('-a', '--algorithm', type=str, default='hdbscan', help='algorithm for clustering. options are agglom(erative) or hdbscan.')
+parser.add_argument('-d', '--depth', type=int, default=250, help='number of clusters to look for (if agglomerative)')
 
 args = parser.parse_args()
 
@@ -38,7 +41,10 @@ post_normalisation = MinMaxScaler()
 normalised_data = post_normalisation.fit_transform(data)
 
 ########## CLUSTERING ##########
-db = hdbscan.HDBSCAN().fit(normalised_data)
+if args.algorithm == 'hdbscan':
+    db = hdbscan.HDBSCAN().fit(normalised_data)
+if args.algorithm == 'agglom':
+    db = AgglomerativeClustering(n_clusters=args.depth).fit(data)
 
 ### D3.JS ###
 
@@ -68,5 +74,5 @@ d3_coordinates["meta"] = [int(num_clusters)]
 
 # Write it out
 json_dir = os.path.join(this_script, '_reduction')
-json_path = os.path.join(json_dir, 'd3_reduce.json')
+json_path = os.path.join(json_dir, args.outfile)
 write_json(json_path, d3_coordinates)
