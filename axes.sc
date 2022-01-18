@@ -49,8 +49,8 @@ SynthDef(\stri, {
 
 ~sc1 = Synth(\scanner,[\out,~b.index, \freq, 20]);
 ~sc2 = Synth(\scanner,[\out,~b.index + 1,\freq, 30]);
-~sc1.set(\freq,30);
-~sc2.set(\freq,-0.1);
+~sc1.set(\freq,60);
+~sc2.set(\freq,30);
 ~sc3 = Synth(\scanner,[\out,0,\freq, 30,\amp,0.0]);
 ~sc3.set(\amp,0.1);
 ~sc3.set(\freq,0.1);
@@ -63,12 +63,49 @@ SynthDef(\stri, {
 {Out.ar(1,Saw.ar(7, mul: 0.1))}.play;
 */
 
+/* 
+Quarks.gui
+Quarks.install("https://github.com/supercollider-quarks/autogui.git")
+{SinOsc.ar()}.play.autogui
+
+
+
+a = SynthDef(\test, {arg out = 3, freq = 100; Out.ar(out, SinOsc.ar(freq))}) ;
+
+z = SynthDefAutogui(\test) ;
+
+SynthDescLib.global[\default].makeGui
+SynthDescLib.global[\stri].makeGui
+x = SynthDescLib.global[\ssaw].makeGui
+x.name = "what"
+
+SynthDescLib.global[\test].makeGui
+\default.sVarGui.gui
+
+~gsynth = {|x| SynthDescLib.global[x].makeGui.name = "" + x};
+~gsynth.(\default)
+~gsynth.(\scanner)
+~gsynth.(\stri)
+~gsynth.(\ssaw)
+
+{|x| SynthDescLib.global[x].makeGui.name = "" + x}.(\scanner)
+\scanner + ""
+
+
+Quarks.install("https://github.com/dkmayer/miscellaneous_lib.git")
+().play.gui
+\default.sVarGui.gui
+s.boot
+
+*/
+
 /*
 
 ~sc1 = Synth(\scanner,[\out,0, \freq, 20]);
+~sc1.gui
 ~sc2 = Synth(\scanner,[\out,0,\freq, 30]);
-~sc1.set(\freq, -12111);
-~sc2.set(\freq, 12);
+~sc1.set(\freq, 36.midicps);
+~sc2.set(\freq, 40.midicps);
 ~sc2.set(\out, 1);
 ().play;
 
@@ -85,7 +122,7 @@ SynthDefAutogui(\stri)
 ~scy.autogui
 
 
-x = ().play;
+x = (duration:60).play;
 x.autogui
 */
 

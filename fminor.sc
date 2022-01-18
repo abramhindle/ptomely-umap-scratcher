@@ -8,7 +8,7 @@
 // check
 
 ~centerkey = 29; // fminor
-~centerkey = 24; // cminor
+//~centerkey = 24; // cminor
 
 ~ffreqs = Scale.minor.degreeToFreq((0..(8*7)), ~centerkey.midicps, 0);
 ~fnotes = (0..7).collect {|x| (Scale.minor.degrees) + (x*12)+~centerkey }.flatten;
@@ -226,7 +226,7 @@ SynthDef(\quadsynth, {
 		mySynth.set(param, ~fnotes.[~fnotes.indexIn( msg[1].linlin(low,hi,low2,hi2) ) ].midicps)
 	}
 };
-
+ 
 
 ~hydro4 = Synth(\hydro4);
 ~hydro4.set(\lpf,2000);
