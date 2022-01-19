@@ -21,7 +21,13 @@ keys = [k for k in feature.keys()]
 
 scaler = StandardScaler()
 unstandardised_data = np.array(raw_data)
-data = scaler.fit_transform(unstandardised_data)
+if unstandardised_data.shape[0] > 10000:
+    print("Sampling 10k")
+    row_indices = np.random.choice(unstandardised_data.shape[0], size=10000, replace=False)
+    scaler = scaler.fit( unstandardised_data[row_indices,:] )
+    data = scaler.transform( unstandardised_data )
+else:
+    data = scaler.fit_transform(unstandardised_data)
 
 # Create class for computing UMAP
 reduction = umap.UMAP(

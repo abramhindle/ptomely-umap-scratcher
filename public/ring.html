@@ -1,0 +1,43 @@
+<!doctype html5>
+<html>
+  <head>
+    <title>Basic.sc: Ring</title>
+    <script src="canvas-mouse.js"></script>
+    <script src="timeline.js"></script>
+    <script src="sequencer.js"></script>
+    <link rel="stylesheet" href="timeline.css"></link>
+  </head>
+    <body>
+        <div id="controls">
+    <button id="addTimeLine">+TL</button>
+    <span class="dotted">
+    <button id="addTable">+Table</button>
+    <select id="tableSize">
+    <option selected>16</option>
+    <option>32</option>
+    <option>64</option>
+    <option>128</option>
+    <option>256</option>    
+    </select>
+    </span>
+    </div>
+
+    <div id="main">
+    </div>
+    <script src="basic.js"></script>
+    <script>
+defs = [
+    {"background":"#AADDFF","path":'/ringsynth/amp'      },
+    {"background":"#AADDFF","path":'/ringsynth/b1',"table":true, "size":32      },
+    {"background":"#AADDFF","path":'/ringsynth/b1rate'      },
+    {"background":"#AADDFF","path":'/ringsynth/b2',"table":true, "size":32      },
+    {"background":"#AADDFF","path":'/ringsynth/b2rate'      },
+    {"background":"#AADDFF","path":'/ringsynth/b3',"table":true, "size":32      },
+    {"background":"#AADDFF","path":'/ringsynth/b3rate'      },
+    {"background":"#AADDFF","path":'/ringsynth/lpf'      },
+    {"background":"#AADDFF","path":'/ringsynth/lprq'    }
+];
+startSeq(defs);
+    </script>
+  </body>  
+</html>

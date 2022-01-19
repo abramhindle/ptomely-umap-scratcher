@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .DS_Store
 /__pycache__
 /.venv
@@ -5,3 +6,6 @@
 /site/node_modules
 /_analysis
 /_reduction
+=======
+.idea
+>>>>>>> 065152101a635d3d5b2768a671ecc369cf9891d7

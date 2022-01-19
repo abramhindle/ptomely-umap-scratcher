@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Demo using native currentTransform</title>
+  <style>
+    body {
+      font:16px sans-serif;
+      background:#ccc;
+      }
+    canvas {
+      background:#999;
+      width:500px;
+      height:500px;
+      border:12px solid #000;
+      padding:16px;
+      cursor:crosshair;
+      }
+    .warn {
+      display:none;
+      background:#ffff00;
+      color:#900;
+      font:bold 20px sans-serif;
+      padding:12px;
+      margin-top:20px;
+      }
+  </style>
+</head>
+<body>
+<h2>This canvas has borders, padding, element is scaled with CSS and context has transforms applied. You should still get the correct mouse (or touch) position.</h2>
+
+<canvas id="canvas" width="1000" height="1000"></canvas>
+
+<button>Clear</button>
+
+<div class="warn">
+  This browser doesn't support currentTransform. See <a href="demo_custommatrix.html">demo</a> for how to work around that when you need to handle contexts with transforms.
+</div>
+
+<script src="../src/canvas-mouse.js"></script>
+<script>
+
+  var canvas = document.getElementById("canvas");
+  var ctx = canvas.getContext("2d");
+
+  // Create an instance of our position handler
+  var cm = new CanvasMouse(ctx, {
+    handleScale: true,
+    handleTransforms: true
+  });
+
+  // draw white background so we can see padding.
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#007";
+
+  // apply some transforms
+  ctx.setTransform(1.1, 0.2, 0.3, 0.9, 20, -10);
+  ctx.rotate(1.2);
+
+  // lets go
+  canvas.onmousemove = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var pos = cm.getPos(e);
+    ctx.fillRect(pos.x-2, pos.y-2, 4, 4);
+  };
+
+  // We can also feed custom coordinates so we get them back as relative to transforms
+  document.querySelector("button").onclick = function() {
+    var
+      ul = cm.getPosXY(0, 0),
+      ur = cm.getPosXY(canvas.width, 0),
+      br = cm.getPosXY(canvas.width, canvas.height),
+      bl = cm.getPosXY(0, canvas.height);
+
+    ctx.beginPath();
+    ctx.moveTo(ul.x, ul.y);
+    ctx.lineTo(ur.x, ur.y);
+    ctx.lineTo(br.x, br.y);
+    ctx.lineTo(bl.x, bl.y);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.fillStyle = "#007";
+  };
+
+
+  // Has browser support?
+  var warn = document.querySelector(".warn");
+  if (!("currentTransform" in CanvasRenderingContext2D.prototype ||
+      "mozCurrentTransform" in CanvasRenderingContext2D.prototype)) {
+    warn.style.display = "block";
+  }
+
+</script>
+</body>
+</html>

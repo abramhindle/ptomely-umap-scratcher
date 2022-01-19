@@ -1,0 +1,53 @@
+<!doctype html5>
+<html>
+  <head>
+    <title>Timeline</title>
+    <script src="canvas-mouse.js"></script>
+    <script src="timeline.js"></script>
+    <script src="sequencer.js"></script>
+    <link rel="stylesheet" href="timeline.css"></link>
+  </head>
+  <body>
+    <div id="main">
+    </div>
+    <script>
+var main = document.getElementById("main");
+var globalDuration = 60.0;
+var ticks = 15.0;
+var osctarget = "localhost:57120";
+var ws = new WebSocket('ws://' + window.location.host + '/ws');
+var ready = false;
+ws.onopen = function() {
+    ready = true;
+}
+ws.addEventListener('message', function(e) {
+    var msg = JSON.parse(e.data);
+    console.log(msg);
+});
+
+var sender = function(path, value, sequencer, timeline) {
+    if (ready) {
+        ws.send(
+            JSON.stringify({
+                target: osctarget,
+                path: path,
+                args: ["f"],
+                params: [""+value]
+            }));
+    }
+};
+
+var seq = new Sequencer({ticks: ticks, duration: globalDuration, delegate: sender});
+for (var i = 0; i < 5; i++) {
+    var tlu = seq.generateTimeLineAndUI();
+    var timeLine = tlu[0];
+    var timeLineUI = tlu[1];
+    timeLineUI.bottom = 0.0;
+    main.appendChild(  timeLineUI.getDom() );
+    timeLine.addPoints([0.5,0.0]);          
+}
+seq.start();
+
+    </script>
+  </body>  
+</html>

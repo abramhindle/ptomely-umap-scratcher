@@ -1,0 +1,206 @@
+<!doctype html5>
+<html>
+  <head>
+    <title>Basic.sc</title>
+    <script src="canvas-mouse.js"></script>
+    <script src="timeline.js"></script>
+    <script src="sequencer.js"></script>
+    <link rel="stylesheet" href="timeline.css"></link>
+  </head>
+    <body>
+        <div id="controls">
+    <button id="addTimeLine">+TL</button>
+    <span class="dotted">
+    <button id="addTable">+Table</button>
+    <select id="tableSize">
+    <option selected>16</option>
+    <option>32</option>
+    <option>64</option>
+    <option>128</option>
+    <option>256</option>    
+    </select>
+    </span>
+    </div>
+
+    <div id="main">
+    </div>
+    <script>
+var main = document.getElementById("main");
+var globalDuration = 60.0;
+var ticks = 15.0;
+var osctarget = "localhost:7770";
+var ws = new WebSocket('ws://' + window.location.host + '/ws');
+var ready = false;
+ws.onopen = function() {
+    ready = true;
+}
+ws.addEventListener('message', function(e) {
+    var msg = JSON.parse(e.data);
+    console.log(msg);
+});
+
+var last = {};
+var sender = function(path, value, sequencer, timeline) {
+    if (ready) {
+        // this is dumb :/
+        if (Array.isArray(value)) {
+            var args = value.map(function(x){ return "f" });
+            var params = value.map(function(x) { return ""+x});
+            
+        } else {
+            var args = ["f"];
+            var params = [""+value]; 
+        }
+        var lastkey = osctarget + path;
+        if (last[lastkey] === JSON.stringify(params)) {
+            // skip
+            return ready;
+        }
+        ws.send(
+            JSON.stringify({
+                target: osctarget,
+                path: path,
+                args: args,
+                params: params
+            }));
+        last[lastkey] = JSON.stringify(params);
+    }
+    return ready;
+};
+
+
+
+var seq = new Sequencer({ticks: ticks, duration: globalDuration, delegate: sender});
+var defs = [
+    {"background":"#AFFAFF","path":"/fully/w1/2"},
+    {"background":"#AFFAFF","path":"/fully/w2/2"},
+    {"background":"#AFFAFF","path":"/fully/w3/2"},
+    {"background":"#AFFAFF","path":"/fully/w4/2"},
+    {"background":"#AFFAFF","path":"/fully/w5/2"},
+    {"background":"#AFFAFF","path":"/fully/w6/2"},
+    {"background":"#AFFAFF","path":"/fully/w7/2"},
+    {"background":"#AFFAFF","path":"/fully/w8/2"},
+    {"background":"#AFFAFF","path":"/fully/w9/2"},
+    {"background":"#FAFAAA","path":"/fully/w1/5"},
+    {"background":"#FAFAAA","path":"/fully/w2/5"},
+    {"background":"#FAFAAA","path":"/fully/w3/5"},
+    {"background":"#FAFAAA","path":"/fully/w4/5"},
+    {"background":"#FAFAAA","path":"/fully/w5/5"},
+    {"background":"#FAFAAA","path":"/fully/w6/5"},
+    {"background":"#FAFAAA","path":"/fully/w7/5"},
+    {"background":"#FAFAAA","path":"/fully/w8/5"},
+    {"background":"#FAFAAA","path":"/fully/w9/5"},
+    {"background":"#AAFFAA","path":"/fully/w1/7"},
+    {"background":"#AAFFAA","path":"/fully/w2/7"},
+    {"background":"#AAFFAA","path":"/fully/w3/7"},
+    {"background":"#AAFFAA","path":"/fully/w4/7"},
+    {"background":"#AAFFAA","path":"/fully/w5/7"},
+    {"background":"#AAFFAA","path":"/fully/w6/7"},
+    {"background":"#AAFFAA","path":"/fully/w7/7"},
+    {"background":"#AAFFAA","path":"/fully/w8/7"},
+    {"background":"#AAFFAA","path":"/fully/w9/7"},
+    {"background":"#AAAAFF","path":"/fully/w1/8"},
+    {"background":"#AAAAFF","path":"/fully/w2/8"},
+    {"background":"#AAAAFF","path":"/fully/w3/8"},
+    {"background":"#AAAAFF","path":"/fully/w4/8"},
+    {"background":"#AAAAFF","path":"/fully/w5/8"},
+    {"background":"#AAAAFF","path":"/fully/w6/8"},
+    {"background":"#AAAAFF","path":"/fully/w7/8"},
+    {"background":"#AAAAFF","path":"/fully/w8/8"},
+    {"background":"#AAAAFF","path":"/fully/w9/8"},
+];
+//for (var i = 0; i < defs.length; i++) {
+//    var tlu = seq.generateTimeLineAndUI();
+//    var timeLine = tlu[0];
+//    timeLine.name = defs[i].path;
+//    var timeLineUI = tlu[1];
+//    if (defs[i].background) {
+//        timeLineUI.background = defs[i].background;
+//    }
+//    timeLineUI.bottom = 0.0;
+//    // main.appendChild( );
+//    var tc = new TimeLineControls( timeLine, timeLineUI );
+//    var container = document.createElement("div");
+//    container.classList.add('tccontainer');
+//    container.appendChild(
+//        tc.getDom()
+//    );
+//    container.appendChild(
+//        timeLineUI.getDom()
+//    );
+//    //main.appendChild( tc.makeUI() );
+//    //main.appendChild(  
+//    main.appendChild(container);
+//    timeLine.addPoints([0.5,0.0]);          
+//}
+function addDef(def) {
+    if (def.table) {
+        var ts = document.getElementById("tableSize");
+        var size = parseInt(ts.options[ts.selectedIndex].text);
+        console.log(size);
+        var tlu = seq.generateTableAndUI(size);
+    } else {
+        var tlu = seq.generateTimeLineAndUI();
+    }
+    var timeLine = tlu[0];
+    timeLine.name = def.path;
+    var timeLineUI = tlu[1];
+    if (def.background) {
+        timeLineUI.background = def.background;
+    }
+    if (!def.table) {
+        timeLineUI.bottom = 0.0;
+    }
+    // main.appendChild( );
+    var tc = new TimeLineControls( timeLine, timeLineUI );
+    var container = document.createElement("div");
+    container.classList.add('tccontainer');
+    container.appendChild(
+        tc.getDom()
+    );
+    container.appendChild(
+        timeLineUI.getDom()
+    );
+    main.appendChild(container);
+    if (!def.table) {
+        timeLine.addPoints([0.5,0.0]);
+    }
+}
+
+for (var i = 0; i < defs.length; i++) {
+    addDef(defs[i]);
+}
+
+seq.start();
+
+var addTimeLine = document.getElementById("addTimeLine");
+var addTable = document.getElementById("addTable");
+
+function generateNewDef() {
+    var def = {
+        "path":"/timeline/"+(defs.length+1)
+    };    
+    addDef(def);
+    defs.push(def);
+}
+function generateNewTableDef() {
+    var def = {
+        "path":"/table/"+(defs.length+1),
+        "table":true
+    };    
+    addDef(def);
+    defs.push(def);
+}
+
+
+addTimeLine.addEventListener("click",function() {
+    generateNewDef();
+});
+addTable.addEventListener("click",function() {
+    generateNewTableDef();
+});
+
+
+    </script>
+  </body>  
+</html>
