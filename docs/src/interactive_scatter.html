@@ -264,14 +264,139 @@ function onDocumentMouseMove( event ) {
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 }
+let fps = 10;
+let _st = Date.now();
+function getT() {
+    return Math.floor( (Date.now() - _st) * fps);
+}
+
+class Macro {
+    constructor() {
+        this.recording = false;
+        this.macro = [];
+    }
+    isRecording() {
+        return this.recording;
+    }
+    stopRecording(t) {
+        this.recording = false;
+        this.last = t - this._startTime;
+    }
+    startRecording(t) {
+        this.recording = true;
+        this._startTime = t;
+        this.macro = [];
+    }
+    addEvent( t, event ) {
+        this.macro.push([t - this._startTime,event]);
+        //this.macro[t - this._startTime] = event;
+    }
+    getEvents(startTime, endTime) {
+        return this.macro.filter( tuple => tuple[0] > startTime && tuple[0] <= endTime).map(tuple => tuple[1]);
+        /*
+        // var i = t % this.macro.length;
+        if (this.last && t >= this.last) {
+            return this.macro[t];
+        }
+        return null;
+        */
+    }
+    isDone(t) {
+        return (t - this._startTime) >= this.last;
+    }
+}
+class Macros {
+    constructor() {
+        this.macros = [];
+        this.currentMacros = [];
+        this.activeCode = null;        
+    }
+    getMacro(code) {
+        return this.macros[code]
+    }
+    isMacroRecording(code) {
+        return this.macros[code] && this.macros[code].isRecording();
+    }
+    stopMacroRecording(code) {
+        console.log("Stop recording "+code);
+        if ( this.macros[code] ) {
+            this.activeCode = null;
+            this.macros[code].stopRecording(getT());
+        }
+    }
+    startMacroRecording(code,t) {
+        console.log("Start recording "+code);
+        this.activeCode = code;
+        this.macros[code] = new Macro();
+        this.macros[code].startRecording(t);
+    }
+    startMacros() {
+        let cb = () => {
+            this.macroStep();
+        };
+        this.startMacrosInterval = setInterval(cb, 1000/fps);
+    }
+    startMacro(code) {
+        if ( this.macros[code] ) {
+            var t = getT();
+            this.currentMacros[ code ] = t;
+            console.log( "Start Macro " + code );
+        }
+    }
+    addEvent( event ) {
+        var t = getT();
+        var code = this.activeCode;
+        if ( code && this.macros[code] ) {
+            // var tdiff = t - this.currentMacros[code];
+            console.log('Adding event '+ code + ' ' + event + ' ' +t);
+            this.macros[code].addEvent( t , event );
+        }
+    }
+    macroStep() {
+        var t = getT();
+        var lt = this.lastTime;
+        if (!lt) {
+            lt = t;
+        }
+        this.currentMacros.forEach(
+            (startTime, code) => {
+                var macro = this.macros[code];
+                if ( startTime && macro ) {
+                    // var startTime = this.currentMacros[code];
+                    var tdiff = t - startTime;
+                    var ltdiff = lt - startTime;
+                    var events = macro.getEvents(ltdiff, tdiff);
+                    events.forEach( event => {
+                        console.log([code,startTime, tdiff, event, macro]);
+                        if ( event ) {
+                            sender( ...event );
+                        }
+                    });
+                    if ( macro.isDone(tdiff) ) {
+                        this.currentMacros[ code ] = null;
+                    }
+                }
+            }
+        );
+        this.lastTime = t;
+    }
+}
+var macros = new Macros();
+macros.startMacros();
+
 function onKeyDown( event ) {
     console.log( event.keyCode );
     var code = event.keyCode;
     var shiftKey = event.shiftKey;
-    if ( shiftKey ) {
-        // start recording
+    var t = getT();
+    if ( shiftKey && code!=16) {
+        if ( macros.isMacroRecording( code ) ) {
+            macros.stopMacroRecording( code );
+        } else {
+            macros.startMacroRecording( code, t );
+        }
     } else {
-        // 
+        macros.startMacro(code);
     }
 }
 
@@ -303,25 +428,27 @@ function render() {
             INTERSECTED = intersects[0].index;
             attributes.size.array[INTERSECTED] = params.baseParticleSize * 4;
             attributes.size.needsUpdate = true;
-
+            
             if (data[INTERSECTED].name) {
                 // audioLoader.load( '../audio/' + data[INTERSECTED].name,
-                            let tuple = data[INTERSECTED].name.slice(1).slice(0,-1).split("',"); // remove parens
-                            let name = tuple[0].slice(1);// remove quotes
-                            let v = parseInt(tuple[1].slice(1));
-                            let args = ['s','i'];
-                            let params = [name,v];
-                            let path='/grain'
-                            console.log([path,args,params])
-                            sender(path, args, params);
-                            //sender("/grain",['i'],"2");
-                            /*
-                audioLoader.load( '../audio/' + data[INTERSECTED].name, 
-                function(buffer) {
-                    sound.setBuffer(buffer);
-                    sound.play();
-            });
-                        */
+                let tuple    = data[INTERSECTED].name.slice(1).slice(0,-1).split("',"); // remove parens
+                let name     = tuple[0].slice(1);// remove quotes
+                let v        = parseInt(tuple[1].slice(1));
+                let args     = ['s','i'];
+                let params   = [name,v];
+                let path     = '/grain';
+                let sendArgs = [path,args,params];
+                console.log( sendArgs );
+                sender( ...sendArgs );
+                macros.addEvent( sendArgs );
+                //sender("/grain",['i'],"2");
+                /*
+                  audioLoader.load( '../audio/' + data[INTERSECTED].name, 
+                  function(buffer) {
+                  sound.setBuffer(buffer);
+                  sound.play();
+                  });
+                */
             }
 
         }
