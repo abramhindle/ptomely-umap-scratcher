@@ -54,7 +54,8 @@
 
 		</script>
 
-		<script type="module">
+    <script type="module">
+"use strict";
 import * as THREE from '../node_modules/three/build/three.module.js';
 import Stats from '../node_modules/three/examples/jsm/libs/stats.module.js';
 import { GUI } from '../node_modules/three/examples/jsm/libs/dat.gui.module.js';
@@ -301,14 +302,16 @@ class Macro {
         return null;
         */
     }
-    isDone(t) {
-        return (t - this._startTime) >= this.last;
+    // t must be normalized from the start of playback
+    isDone(t) { 
+        return t >= this.last;
     }
 }
 class Macros {
     constructor() {
         this.macros = [];
         this.currentMacros = [];
+        this.looping = [];
         this.activeCode = null;        
     }
     getMacro(code) {
@@ -343,6 +346,28 @@ class Macros {
             console.log( "Start Macro " + code );
         }
     }
+    stopMacro(code) {
+        if (this.macros[code]) {
+            this.currentMacros[ code ] = null;
+        }
+    }
+    startLoopMacro(code) {
+        if (this.macros[code]) {
+            this.startMacro(code);
+            this.looping[code] = true;
+            console.log("Starting Loop "+code);
+        }
+    }
+    isLoopMacro(code) {
+        return this.looping[code];
+    }
+    stopLoopMacro(code) {
+        if (this.macros[code]) {
+            this.stopMacro(code);
+            this.looping[code] = false;
+            console.log("Stopping Loop "+code);
+        }
+    }
     addEvent( event ) {
         var t = getT();
         var code = this.activeCode;
@@ -367,33 +392,55 @@ class Macros {
                     var ltdiff = lt - startTime;
                     var events = macro.getEvents(ltdiff, tdiff);
                     events.forEach( event => {
-                        console.log([code,startTime, tdiff, event, macro]);
+                        // console.log([code,startTime, tdiff, event, macro]);
                         if ( event ) {
                             sender( ...event );
                         }
                     });
                     if ( macro.isDone(tdiff) ) {
-                        this.currentMacros[ code ] = null;
+                        // console.log("Macro is done "+code+" " +macro.last + " tdiff:"+tdiff);
+                        // console.log(macro);
+                        this.stopMacro( code );
+                        if (this.looping[code]) {
+                            this.startMacro(code);
+                        }
                     }
                 }
             }
         );
         this.lastTime = t;
     }
+    summarize() {
+        var t = getT();
+        var playing = this.currentMacros.map( (x,i) => x && String.fromCharCode(i)).filter(x => x);
+        var looping = this.looping.map( (x,i) => x && String.fromCharCode(i)).filter(x => x);
+        return " Playing: " + playing.join(",") + " Looping: "+looping.join(",");
+    }
 }
 var macros = new Macros();
 macros.startMacros();
+window.macros = macros;
+setInterval(function() {
+    document.getElementById("info").textContent =  macros.summarize();
+} ,1000);
 
 function onKeyDown( event ) {
     console.log( event.keyCode );
     var code = event.keyCode;
     var shiftKey = event.shiftKey;
+    var ctrlKey = event.ctrlKey;
     var t = getT();
     if ( shiftKey && code!=16) {
         if ( macros.isMacroRecording( code ) ) {
             macros.stopMacroRecording( code );
         } else {
             macros.startMacroRecording( code, t );
+        }
+    } else if ( ctrlKey && code!=16 ) {
+        if ( macros.isLoopMacro( code ) ) {
+            macros.stopLoopMacro(code);
+        } else {
+            macros.startLoopMacro(code);
         }
     } else {
         macros.startMacro(code);
