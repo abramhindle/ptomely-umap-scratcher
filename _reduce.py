@@ -71,7 +71,7 @@ if unstandardised_data.shape[0] > args.sample:
     print(f'Transforming {unstandardised_data.shape[0]}')
     data = reduction.transform( unstandardised_data )
 else:
-    data = reduciton.fit_transform(unstandardised_data)
+    data = reduction.fit_transform(unstandardised_data)
 
 # data = reduction.fit_transform(data)
 

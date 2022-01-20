@@ -6,9 +6,9 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="main.css">
 	</head>
-	<body>
-		<div id="info">
-		  dimensionality reduction using VGGish and UMAP</a><br>
+    <body>
+    <div id="info">
+    ` key macro records; ` stops macro recording; shift key loop; key plays macros;
 <!--
 			The full code is available here <a href="https://github.com/jamesb93/ptolemy" target="blank">at my github</a><br>
 			<strong>Left Click - Rotate | Right Click - Drag Scene | Scroll - Zoom</strong><br>
@@ -320,12 +320,17 @@ class Macros {
     isMacroRecording(code) {
         return this.macros[code] && this.macros[code].isRecording();
     }
+    stopActiveMacroRecording() {
+        return this.stopMacroRecording( this.activeCode);
+    }
     stopMacroRecording(code) {
-        console.log("Stop recording "+code);
         if ( this.macros[code] ) {
+            console.log("Stop recording "+code);
             this.activeCode = null;
             this.macros[code].stopRecording(getT());
+            return true;
         }
+        return false;
     }
     startMacroRecording(code,t) {
         console.log("Start recording "+code);
@@ -414,37 +419,52 @@ class Macros {
         var t = getT();
         var playing = this.currentMacros.map( (x,i) => x && String.fromCharCode(i)).filter(x => x);
         var looping = this.looping.map( (x,i) => x && String.fromCharCode(i)).filter(x => x);
-        return " Playing: " + playing.join(",") + " Looping: "+looping.join(",");
+        var prefix = (this.activeCode)?("Recording "+String.fromCharCode(this.activeCode)+" "):"";
+        var macros = this.macros.map( (x,i) => x && String.fromCharCode(i)).filter(x => x);
+        return prefix+"Playing: " + playing.join("") + " Looping: "+looping.join("") + " M:"+macros.join("");
     }
 }
 var macros = new Macros();
 macros.startMacros();
 window.macros = macros;
-setInterval(function() {
+let updateUISummarize = () => {
     document.getElementById("info").textContent =  macros.summarize();
-} ,1000);
-
+};
+var updateUISummarizeInterval = setInterval(updateUISummarize,1000);
+var backQuote = 192;
+var shiftCode = 16;
+var _recordNext = false;
 function onKeyDown( event ) {
     console.log( event.keyCode );
     var code = event.keyCode;
     var shiftKey = event.shiftKey;
     var ctrlKey = event.ctrlKey;
     var t = getT();
-    if ( shiftKey && code!=16) {
+    if ( ctrlKey && code!=shiftCode) {
         if ( macros.isMacroRecording( code ) ) {
             macros.stopMacroRecording( code );
         } else {
             macros.startMacroRecording( code, t );
         }
-    } else if ( ctrlKey && code!=16 ) {
+    } else if ( code == backQuote ) {
+        if (macros.stopActiveMacroRecording()) {            
+            // do nothing
+        } else {
+            _recordNext = true;
+        }
+    } else if ( shiftKey && code!=shiftCode ) {
         if ( macros.isLoopMacro( code ) ) {
             macros.stopLoopMacro(code);
         } else {
             macros.startLoopMacro(code);
         }
+    } else if ( _recordNext && code!=shiftCode && code != backQuote) {
+        _recordNext = false;
+        macros.startMacroRecording( code, t );        
     } else {
         macros.startMacro(code);
     }
+    updateUISummarize();
 }
 
 function onWindowResize() {
