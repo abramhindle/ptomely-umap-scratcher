@@ -1,3 +1,36 @@
+# 3D UMap with Supercollider
+
+Here's a bad demo to illustrate what it looks like:
+
+https://www.youtube.com/watch?v=hJstOFwQW-E
+
+Make a CSV File with the following format
+
+```
+filename,timeindex,128+numbers+from+an+embedding
+```
+
+For example:
+
+```
+"/opt/hindle1/Music/48kmonos/ZOOM0029.wav",99,24,116,146,0,78,162,17,169,255,90,65,218,211,179,92,209,161,94,116,188,255,0,97,202,139,114,241,94,255,29,2,0,177,139,116,133,170,123,255,26,118,0,0,213,172,70,112,0,54,255,197,255,14,144,24,0,120,225,54,254,0,140,157,48,235,6,74,136,246,0,137,173,0,162,60,189,255,95,173,236,0,255,115,0,255,105,0,0,0,255,143,75,255,111,35,189,71,153,77,255,0,0,56,255,211,58,0,115,255,255,188,169,203,0,147,59,255,255,0,88,255,52,255,10,0,39,0,106
+```
+
+Then run `_reduce.py -i yourcsv.csv`. It produces `_reduction/reduce.json` .
+Link/mv/copy that to `./docs/plots/reduce.json` 
+
+Then run go-oscer
+
+`make runserver`
+
+It'll use go to run the webserver 
+
+Then go to:
+
+`http://localhost:8000/src/interactive_scatter.html`
+
+(Make sure that the src dir is linked in `public`).
+
 # Go-oscer
 
 A websocket to OSC webservice for Go. Used to ferry over messages from a time-line based UI
@@ -69,3 +102,15 @@ Then point your browser to http://localhost:8000
     COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# Ptolemy
+
+Map and find things in your data with openGL to help make it pretty.
+
+Mostly a personal weekend interest in looking at making a functional, fast map of some audio descriptor data + machine learning outputs.
+
+It requires a Python 3.6+ environment and node package manager to run the web server and dependencies for drawing with three.js.
+
+It makes use of the FluCoMa tools for audio analysis and statistics. Big thanks to the team at Huddersfield University for these tools!
+
+www.flucoma.org
